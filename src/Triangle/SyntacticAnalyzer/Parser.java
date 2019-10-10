@@ -80,7 +80,7 @@ import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.LoopCommand;
 
 public class Parser {
 
@@ -293,18 +293,62 @@ public class Parser {
       }
       break;
 
-    case Token.BEGIN:
-      acceptIt();
-      commandAST = parseCommand();
-      accept(Token.END);
-      break;
-
+    case Token.LOOP:
+      {
+          // Aceptamos el token del loop y pasamos al siguiente
+          acceptIt();
+          //Para evaluar todas las posibles combinaciones del loop
+          switch(currentToken.kind){
+              case Token.WHILE:
+              case Token.UNTIL:
+              {
+                //Loop kind will store the kind of loop the user has asked
+                int loopKind = currentToken.kind;
+                acceptIt();
+                Expression eAST = parseExpression();
+                accept(Token.DO);
+                Command cAST = parseCommand();
+                finish(commandPos);
+                accept(Token.REPEAT);
+                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
+              }
+              break;
+              
+              case Token.DO:
+              {
+                acceptIt();
+                Command cAST = parseCommand();
+                finish(commandPos);
+                if(!(currentToken.kind == Token.WHILE || currentToken.kind == Token.UNTIL)){
+                    syntacticError("Unexpected \"%\"", currentToken.spelling);
+                }
+                int loopKind = currentToken.kind;
+                acceptIt();
+                Expression eAST = parseExpression();
+                accept(Token.REPEAT);
+                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
+                break;
+              }
+              
+              case Token.FOR:
+              {
+                  acceptIt();
+                  //@TODO: Implementar
+              }
+              default:
+              {
+                syntacticError("Unexpected \"%\"", currentToken.spelling);
+                break;
+              }
+          }
+          break;
+      }
     case Token.LET:
       {
         acceptIt();
         Declaration dAST = parseDeclaration();
         accept(Token.IN);
-        Command cAST = parseSingleCommand();
+        Command cAST = parseCommand();
         finish(commandPos);
         commandAST = new LetCommand(dAST, cAST, commandPos);
       }
@@ -315,22 +359,12 @@ public class Parser {
         acceptIt();
         Expression eAST = parseExpression();
         accept(Token.THEN);
-        Command c1AST = parseSingleCommand();
+        Command c1AST = parseCommand();
         accept(Token.ELSE);
-        Command c2AST = parseSingleCommand();
+        Command c2AST = parseCommand();
         finish(commandPos);
+        accept(Token.END);
         commandAST = new IfCommand(eAST, c1AST, c2AST, commandPos);
-      }
-      break;
-
-    case Token.WHILE:
-      {
-        acceptIt();
-        Expression eAST = parseExpression();
-        accept(Token.DO);
-        Command cAST = parseSingleCommand();
-        finish(commandPos);
-        commandAST = new WhileCommand(eAST, cAST, commandPos);
       }
       break;
 
