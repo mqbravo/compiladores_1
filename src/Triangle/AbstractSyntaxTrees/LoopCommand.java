@@ -23,12 +23,13 @@ public class LoopCommand extends Command {
    * @param eAST It's control expression
    * @param cAST It's command
    * @param thePosition Where it can be found in the source
-   * @param TokenKind Two kinds of loop: While or Until
+   * @param tokenKind Two kinds of loop: While or Until
    */
-  public LoopCommand (Expression eAST, Command cAST, SourcePosition thePosition, int TokenKind) {
+  public LoopCommand (Expression eAST, Command cAST, SourcePosition thePosition, int tokenKind) {
     super (thePosition);
     E = eAST;
     C = cAST;
+    T = tokenKind;
   }
 
   @Override

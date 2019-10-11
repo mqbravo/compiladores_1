@@ -37,6 +37,7 @@ import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.Expression;
 import Triangle.AbstractSyntaxTrees.FieldTypeDenoter;
+import Triangle.AbstractSyntaxTrees.ForLoopCommand;
 import Triangle.AbstractSyntaxTrees.FormalParameter;
 import Triangle.AbstractSyntaxTrees.FormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
@@ -332,8 +333,16 @@ public class Parser {
               
               case Token.FOR:
               {
-                  acceptIt();
-                  //@TODO: Implementar
+                acceptIt();
+                Identifier identificador = parseIdentifier();
+                accept(Token.IS);
+                Expression idenAST = parseExpression();
+                accept(Token.TO);
+                Expression eAST = parseExpression();
+                accept(Token.DO);
+                Command cAST = parseCommand();
+                accept(Token.REPEAT);
+                commandAST = new ForLoopCommand(identificador, idenAST, eAST, cAST, commandPos);
               }
               default:
               {
@@ -350,6 +359,7 @@ public class Parser {
         accept(Token.IN);
         Command cAST = parseCommand();
         finish(commandPos);
+        accept(Token.END);
         commandAST = new LetCommand(dAST, cAST, commandPos);
       }
       break;
