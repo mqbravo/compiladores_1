@@ -157,7 +157,6 @@ final class Token extends Object {
     "]",
     "{",
     "}",
-    "",
     "<error>"
   };
 

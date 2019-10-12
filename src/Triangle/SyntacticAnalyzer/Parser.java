@@ -378,7 +378,13 @@ public class Parser {
       }
       break;
 
-    case Token.SEMICOLON:
+    case Token.SKIP:
+    {
+        acceptIt();
+        commandAST = new EmptyCommand(commandPos);
+        break;
+    }
+    
     case Token.END:
     case Token.ELSE:
     case Token.IN:
