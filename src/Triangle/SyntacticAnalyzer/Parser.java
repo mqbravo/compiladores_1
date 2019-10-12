@@ -343,6 +343,7 @@ public class Parser {
                 Command cAST = parseCommand();
                 accept(Token.REPEAT);
                 commandAST = new ForLoopCommand(identificador, idenAST, eAST, cAST, commandPos);
+                break;
               }
               default:
               {
