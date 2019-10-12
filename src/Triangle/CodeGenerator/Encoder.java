@@ -88,7 +88,8 @@ import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.LoopCommand;
+import Triangle.AbstractSyntaxTrees.ForLoopCommand;
 
 public final class Encoder implements Visitor {
 
@@ -144,20 +145,39 @@ public final class Encoder implements Visitor {
     return null;
   }
 
-  public Object visitWhileCommand(WhileCommand ast, Object o) {
-    Frame frame = (Frame) o;
-    int jumpAddr, loopAddr;
-
-    jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    loopAddr = nextInstrAddr;
-    ast.C.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
-    ast.E.visit(this, frame);
-    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-    return null;
+  //@TODO: Implement
+  @Override
+  public Object visitLoopCommand(LoopCommand ast, Object o) {
+//    Frame frame = (Frame) o;
+//    int jumpAddr, loopAddr;
+//
+//    jumpAddr = nextInstrAddr;
+//    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+//    loopAddr = nextInstrAddr;
+//    ast.C.visit(this, frame);
+//    patch(jumpAddr, nextInstrAddr);
+//    ast.E.visit(this, frame);
+//    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+//    return null;
+      return null;
   }
 
+  //@TODO: Implement
+  @Override
+  public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
+//    Frame frame = (Frame) o;
+//    int jumpAddr, loopAddr;
+//
+//    jumpAddr = nextInstrAddr;
+//    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+//    loopAddr = nextInstrAddr;
+//    ast.C.visit(this, frame);
+//    patch(jumpAddr, nextInstrAddr);
+//    ast.E.visit(this, frame);
+//    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+//    return null;
+      return null;
+  }
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object o) {

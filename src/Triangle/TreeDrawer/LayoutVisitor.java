@@ -79,7 +79,8 @@ import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.LoopCommand;
+import Triangle.AbstractSyntaxTrees.ForLoopCommand;
 
 public class LayoutVisitor implements Visitor {
 
@@ -117,9 +118,16 @@ public class LayoutVisitor implements Visitor {
     return layoutBinary("Seq.Com.", ast.C1, ast.C2);
   }
 
-  public Object visitWhileCommand(WhileCommand ast, Object obj) {
-    return layoutBinary("WhileCom.", ast.E, ast.C);
+  @Override
+  public Object visitLoopCommand(LoopCommand ast, Object obj) {
+    return layoutBinary("LoopCom.", ast.E, ast.C);
   }
+  
+  @Override
+  public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
+    return layoutTernary("LoopCom.", ast.IdenExpression, ast.E, ast.C);
+  }
+
 
 
   // Expressions
