@@ -26,6 +26,7 @@ import Triangle.AbstractSyntaxTrees.EmptyCommand;
 import Triangle.AbstractSyntaxTrees.EmptyExpression;
 import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
 import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
+import Triangle.AbstractSyntaxTrees.ForLoopCommand;
 import Triangle.AbstractSyntaxTrees.FuncActualParameter;
 import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
@@ -37,6 +38,7 @@ import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
+import Triangle.AbstractSyntaxTrees.LoopCommand;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
@@ -67,12 +69,10 @@ import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
 import Triangle.CodeGenerator.Field;
 import Triangle.CodeGenerator.KnownAddress;
 import Triangle.CodeGenerator.KnownRoutine;
 import Triangle.CodeGenerator.KnownValue;
-import Triangle.CodeGenerator.TypeRepresentation;
 import Triangle.CodeGenerator.UnknownAddress;
 import Triangle.CodeGenerator.UnknownRoutine;
 import Triangle.CodeGenerator.UnknownValue;
@@ -94,6 +94,7 @@ public class TableVisitor implements Visitor {
 
   // <editor-fold defaultstate="collapsed" desc=" Commands ">
   // Commands
+    @Override
   public Object visitAssignCommand(AssignCommand ast, Object o) { 
       ast.V.visit(this, null);
       ast.E.visit(this, null);
@@ -101,6 +102,7 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
+    @Override
   public Object visitCallCommand(CallCommand ast, Object o) { 
       ast.I.visit(this, null);
       ast.APS.visit(this, null);
@@ -108,10 +110,12 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
+    @Override
   public Object visitEmptyCommand(EmptyCommand ast, Object o) { 
       return(null);
   }
   
+    @Override
   public Object visitIfCommand(IfCommand ast, Object o) { 
       ast.E.visit(this, null);
       ast.C1.visit(this, null);
@@ -120,6 +124,7 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
+    @Override
   public Object visitLetCommand(LetCommand ast, Object o) {     
       ast.D.visit(this, null);
       ast.C.visit(this, null);
@@ -127,6 +132,7 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
+    @Override
   public Object visitSequentialCommand(SequentialCommand ast, Object o) { 
       ast.C1.visit(this, null);
       ast.C2.visit(this, null);
@@ -134,7 +140,17 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
-  public Object visitWhileCommand(WhileCommand ast, Object o) { 
+    @Override
+  public Object visitLoopCommand(LoopCommand ast, Object o) {
+      ast.E.visit(this, null);
+      ast.C.visit(this, null);
+      
+      return(null);
+  }
+  
+    @Override
+  public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
+      ast.IdenExpression.visit(this, null);
       ast.E.visit(this, null);
       ast.C.visit(this, null);
       

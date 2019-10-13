@@ -67,7 +67,8 @@ import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.LoopCommand;
+import Triangle.AbstractSyntaxTrees.ForLoopCommand;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -88,32 +89,44 @@ public class TreeVisitor implements Visitor {
     
     // <editor-fold defaultstate="collapsed" desc=" Commands ">    
     // Commands  
+    @Override
     public Object visitAssignCommand(AssignCommand ast, Object o) {
         return(createBinary("Assign Command", ast.V, ast.E));
     }
     
+    @Override
     public Object visitCallCommand(CallCommand ast, Object o) {
         return(createBinary("Call Command", ast.I, ast.APS));
     }
     
+    @Override
     public Object visitEmptyCommand(EmptyCommand ast, Object o) {
         return(createNullary("Empty Command"));
     }
     
+    @Override
     public Object visitIfCommand(IfCommand ast, Object obj) {
         return(createTernary("If Command", ast.E, ast.C1, ast.C2));
     }
     
+    @Override
     public Object visitLetCommand(LetCommand ast, Object obj) {
         return(createBinary("Let Command", ast.D, ast.C));
     }
     
+    @Override
     public Object visitSequentialCommand(SequentialCommand ast, Object obj) {
         return(createBinary("Sequential Command", ast.C1, ast.C2));
     }
     
-    public Object visitWhileCommand(WhileCommand ast, Object obj) {
-        return(createBinary("While Command", ast.E, ast.C));
+    @Override
+    public Object visitLoopCommand(LoopCommand ast, Object obj) {
+        return(createBinary("Loop Command", ast.E, ast.C));
+    }
+    
+    @Override
+    public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
+        return(createTernary("ForLoop Command", ast.IdenExpression, ast.E, ast.C));
     }
     // </editor-fold>
     
