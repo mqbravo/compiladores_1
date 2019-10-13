@@ -20,7 +20,7 @@ public class ErrorReporter {
 
   int numErrors;
 
-  ErrorReporter() {
+  public ErrorReporter() {
     numErrors = 0;
   }
 
@@ -38,5 +38,9 @@ public class ErrorReporter {
 
   public void reportRestriction(String message) {
     System.out.println("RESTRICTION: " + message);
+  }
+
+  public int getNumErrors() {
+    return numErrors;
   }
 }
