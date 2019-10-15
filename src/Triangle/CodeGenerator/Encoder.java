@@ -93,7 +93,6 @@ import Triangle.AbstractSyntaxTrees.ForLoopCommand;
 
 public final class Encoder implements Visitor {
 
-
   // Commands
   public Object visitAssignCommand(AssignCommand ast, Object o) {
     Frame frame = (Frame) o;
@@ -145,9 +144,8 @@ public final class Encoder implements Visitor {
     return null;
   }
 
-  //@TODO: Implement
-  @Override
-  public Object visitLoopCommand(LoopCommand ast, Object o) {
+//  @Override
+//  public Object visitLoopCommand(LoopCommand ast, Object o) {
 //    Frame frame = (Frame) o;
 //    int jumpAddr, loopAddr;
 //
@@ -159,8 +157,7 @@ public final class Encoder implements Visitor {
 //    ast.E.visit(this, frame);
 //    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
 //    return null;
-      return null;
-  }
+//  }
 
   //@TODO: Implement
   @Override
@@ -177,6 +174,30 @@ public final class Encoder implements Visitor {
 //    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
 //    return null;
       return null;
+  }
+  
+  //@TODO: Implement
+  @Override
+  public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  //@TODO: Implement
+  @Override
+  public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  //@TODO: Implement
+  @Override
+  public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  //@TODO: Implement
+  @Override
+  public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   // Expressions

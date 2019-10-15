@@ -31,6 +31,8 @@ import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
 import Triangle.AbstractSyntaxTrees.Declaration;
+import Triangle.AbstractSyntaxTrees.DoUntilLoopCommand;
+import Triangle.AbstractSyntaxTrees.DoWhileLoopCommand;
 import Triangle.AbstractSyntaxTrees.DotVname;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
@@ -82,6 +84,8 @@ import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
 import Triangle.AbstractSyntaxTrees.LoopCommand;
+import Triangle.AbstractSyntaxTrees.UntilLoopCommand;
+import Triangle.AbstractSyntaxTrees.WhileLoopCommand;
 
 public class Parser {
 
@@ -304,14 +308,15 @@ public class Parser {
               case Token.UNTIL:
               {
                 //Loop kind will store the kind of loop the user has asked
-                int loopKind = currentToken.kind;
                 acceptIt();
                 Expression eAST = parseExpression();
                 accept(Token.DO);
                 Command cAST = parseCommand();
                 finish(commandPos);
                 accept(Token.REPEAT);
-                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
+                commandAST = currentToken.kind == Token.WHILE ? 
+                        new WhileLoopCommand(eAST, cAST, commandPos):
+                        new UntilLoopCommand(eAST, cAST, commandPos);
               }
               break;
               
@@ -323,11 +328,12 @@ public class Parser {
                 if(!(currentToken.kind == Token.WHILE || currentToken.kind == Token.UNTIL)){
                     syntacticError("Unexpected \"%\"", currentToken.spelling);
                 }
-                int loopKind = currentToken.kind;
                 acceptIt();
                 Expression eAST = parseExpression();
                 accept(Token.REPEAT);
-                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
+                commandAST = currentToken.kind == Token.WHILE ? 
+                        new DoWhileLoopCommand(eAST, cAST, commandPos):
+                        new DoUntilLoopCommand(eAST, cAST, commandPos);
                 break;
               }
               
