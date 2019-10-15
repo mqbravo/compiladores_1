@@ -118,40 +118,30 @@ public class TreeVisitor implements Visitor {
     public Object visitSequentialCommand(SequentialCommand ast, Object obj) {
         return(createBinary("Sequential Command", ast.C1, ast.C2));
     }
-    
-//    @Override
-//    public Object visitLoopCommand(LoopCommand ast, Object obj) {
-//        return(createBinary("Loop Command", ast.E, ast.C));
-//    }
-    
-    //@TODO: Implement
+
     @Override
     public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
         return(createQuaternary("ForLoop Command", ast.Identifier, ast.IdenExpression, ast.E, ast.C));
     }
-    
-    //@TODO: Implement
+
     @Override
     public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return(createBinary("WhileLoop Command",ast.E, ast.C));
     }
 
-    //@TODO: Implement
     @Override
     public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return(createBinary("DoWhileLoop Command",ast.E, ast.C));
     }
 
-    //@TODO: Implement
     @Override
     public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return(createBinary("UntilLoop Command",ast.E, ast.C));
     }
 
-    //@TODO: Implement
     @Override
     public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return(createBinary("DoUntilLoop Command",ast.E, ast.C));
     }
     // </editor-fold>
     

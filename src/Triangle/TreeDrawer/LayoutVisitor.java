@@ -120,31 +120,27 @@ public class LayoutVisitor implements Visitor {
   
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
-    return layoutQuaternary("LoopCom.", ast.Identifier, ast.IdenExpression, ast.E, ast.C);
+    return layoutTernary("ForLoopCom.", ast.IdenExpression, ast.E, ast.C);
   }
 
-  //@TODO: Implement
   @Override
   public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return layoutBinary("WhileLoopCom.", ast.E, ast.C);
   }
 
-  //@TODO: Implement
   @Override
   public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return layoutBinary("DoWhileLoopCom.", ast.E, ast.C);
   }
 
-  //@TODO: Implement
   @Override
   public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return layoutBinary("UntilLoopCom.", ast.E, ast.C);
   }
 
-  //@TODO: Implement
   @Override
   public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return layoutBinary("DoUntilLoopCom.", ast.E, ast.C);
   }
 
   // Expressions
