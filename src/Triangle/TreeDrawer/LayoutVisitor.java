@@ -120,7 +120,7 @@ public class LayoutVisitor implements Visitor {
   
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
-    return layoutTernary("LoopCom.", ast.IdenExpression, ast.E, ast.C);
+    return layoutQuaternary("LoopCom.", ast.Identifier, ast.IdenExpression, ast.E, ast.C);
   }
 
   //@TODO: Implement
