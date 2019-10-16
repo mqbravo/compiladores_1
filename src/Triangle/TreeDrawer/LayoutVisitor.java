@@ -117,18 +117,31 @@ public class LayoutVisitor implements Visitor {
   public Object visitSequentialCommand(SequentialCommand ast, Object obj) {
     return layoutBinary("Seq.Com.", ast.C1, ast.C2);
   }
-
-  @Override
-  public Object visitLoopCommand(LoopCommand ast, Object obj) {
-    return layoutBinary("LoopCom.", ast.E, ast.C);
-  }
   
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
-    return layoutTernary("LoopCom.", ast.IdenExpression, ast.E, ast.C);
+    return layoutTernary("ForLoopCom.", ast.IdenExpression, ast.E, ast.C);
   }
 
+  @Override
+  public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
+    return layoutBinary("WhileLoopCom.", ast.E, ast.C);
+  }
 
+  @Override
+  public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
+    return layoutBinary("DoWhileLoopCom.", ast.E, ast.C);
+  }
+
+  @Override
+  public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
+    return layoutBinary("UntilLoopCom.", ast.E, ast.C);
+  }
+
+  @Override
+  public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
+    return layoutBinary("DoUntilLoopCom.", ast.E, ast.C);
+  }
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object obj) {

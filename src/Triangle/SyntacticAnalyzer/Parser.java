@@ -31,6 +31,8 @@ import Triangle.AbstractSyntaxTrees.ConstActualParameter;
 import Triangle.AbstractSyntaxTrees.ConstDeclaration;
 import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
 import Triangle.AbstractSyntaxTrees.Declaration;
+import Triangle.AbstractSyntaxTrees.DoUntilLoopCommand;
+import Triangle.AbstractSyntaxTrees.DoWhileLoopCommand;
 import Triangle.AbstractSyntaxTrees.DotVname;
 import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.EmptyCommand;
@@ -50,6 +52,7 @@ import Triangle.AbstractSyntaxTrees.IntegerExpression;
 import Triangle.AbstractSyntaxTrees.IntegerLiteral;
 import Triangle.AbstractSyntaxTrees.LetCommand;
 import Triangle.AbstractSyntaxTrees.LetExpression;
+import Triangle.AbstractSyntaxTrees.LoopCommand;
 import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
 import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
 import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
@@ -81,7 +84,8 @@ import Triangle.AbstractSyntaxTrees.VarDeclaration;
 import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Vname;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.LoopCommand;
+import Triangle.AbstractSyntaxTrees.UntilLoopCommand;
+import Triangle.AbstractSyntaxTrees.WhileLoopCommand;
 
 public class Parser {
 
@@ -298,59 +302,8 @@ public class Parser {
       {
           // Aceptamos el token del loop y pasamos al siguiente
           acceptIt();
-          //Para evaluar todas las posibles combinaciones del loop
-          switch(currentToken.kind){
-              case Token.WHILE:
-              case Token.UNTIL:
-              {
-                //Loop kind will store the kind of loop the user has asked
-                int loopKind = currentToken.kind;
-                acceptIt();
-                Expression eAST = parseExpression();
-                accept(Token.DO);
-                Command cAST = parseCommand();
-                finish(commandPos);
-                accept(Token.REPEAT);
-                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
-              }
-              break;
-              
-              case Token.DO:
-              {
-                acceptIt();
-                Command cAST = parseCommand();
-                finish(commandPos);
-                if(!(currentToken.kind == Token.WHILE || currentToken.kind == Token.UNTIL)){
-                    syntacticError("Unexpected \"%\"", currentToken.spelling);
-                }
-                int loopKind = currentToken.kind;
-                acceptIt();
-                Expression eAST = parseExpression();
-                accept(Token.REPEAT);
-                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
-                break;
-              }
-              
-              case Token.FOR:
-              {
-                acceptIt();
-                Identifier identificador = parseIdentifier();
-                accept(Token.IS);
-                Expression idenAST = parseExpression();
-                accept(Token.TO);
-                Expression eAST = parseExpression();
-                accept(Token.DO);
-                Command cAST = parseCommand();
-                accept(Token.REPEAT);
-                commandAST = new ForLoopCommand(identificador, idenAST, eAST, cAST, commandPos);
-                break;
-              }
-              default:
-              {
-                syntacticError("Unexpected \"%\"", currentToken.spelling);
-                break;
-              }
-          }
+          commandAST = this.parseLoopCommand();
+          accept(Token.REPEAT);
           break;
       }
     case Token.LET:
@@ -405,6 +358,67 @@ public class Parser {
     return commandAST;
   }
 
+  LoopCommand parseLoopCommand() throws SyntaxError{
+    LoopCommand commandAST = null;
+    
+    SourcePosition commandPos = new SourcePosition();
+    start(commandPos);
+    
+    switch(currentToken.kind){
+              case Token.WHILE:
+              case Token.UNTIL:
+              {
+                //Loop kind will store the kind of loop the user has asked
+                int loopKind = currentToken.kind;
+                acceptIt();
+                Expression eAST = parseExpression();
+                accept(Token.DO);
+                Command cAST = parseCommand();
+                finish(commandPos);
+                commandAST = loopKind == Token.WHILE ? 
+                        new WhileLoopCommand(eAST, cAST, commandPos):
+                        new UntilLoopCommand(eAST, cAST, commandPos);
+                break;
+              }              
+              case Token.DO:
+              {
+                acceptIt();
+                Command cAST = parseCommand();
+                finish(commandPos);
+                if(!(currentToken.kind == Token.WHILE || currentToken.kind == Token.UNTIL)){
+                    syntacticError("Unexpected \"%\"", currentToken.spelling);
+                }
+                int loopKind = currentToken.kind;
+                acceptIt();
+                Expression eAST = parseExpression();
+                commandAST = loopKind == Token.WHILE ? 
+                        new DoWhileLoopCommand(eAST, cAST, commandPos):
+                        new DoUntilLoopCommand(eAST, cAST, commandPos);
+                break;
+              }
+              
+              case Token.FOR:
+              {
+                acceptIt();
+                Identifier identificador = parseIdentifier();
+                accept(Token.IS);
+                Expression idenAST = parseExpression();
+                accept(Token.TO);
+                Expression eAST = parseExpression();
+                accept(Token.DO);
+                Command cAST = parseCommand();
+                commandAST = new ForLoopCommand(identificador, idenAST, eAST, cAST, commandPos);
+                break;
+              }
+              default:
+              {
+                syntacticError("Unexpected \"%\"", currentToken.spelling);
+                break;
+              }
+          }
+    return commandAST;
+  }
+  
 ///////////////////////////////////////////////////////////////////////////////
 //
 // EXPRESSIONS

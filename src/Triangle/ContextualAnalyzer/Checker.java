@@ -147,7 +147,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  //@TODO: Implement
+  /*
   @Override
   public Object visitLoopCommand(LoopCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
@@ -156,6 +156,7 @@ public final class Checker implements Visitor {
     ast.C.visit(this, null);
     return null;
   }
+  */
   
   //@TODO: Implement
   @Override
@@ -165,6 +166,30 @@ public final class Checker implements Visitor {
       reporter.reportError("Boolean expression expected here", "", ast.E.position);
     ast.C.visit(this, null);
     return null;
+  }
+  
+  //@TODO: Implement
+  @Override
+  public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  //@TODO: Implement
+  @Override
+  public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  //@TODO: Implement
+  @Override
+  public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  //@TODO: Implement
+  @Override
+  public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   // Expressions

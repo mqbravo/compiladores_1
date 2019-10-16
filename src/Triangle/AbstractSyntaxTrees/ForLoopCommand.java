@@ -11,7 +11,7 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  *
  * @author Esteban
  */
-public class ForLoopCommand extends Command{
+public class ForLoopCommand extends LoopCommand{
     
     
     /**
@@ -23,11 +23,9 @@ public class ForLoopCommand extends Command{
    * @param thePosition Where it can be found in the source
    */
   public ForLoopCommand (Identifier identifier, Expression idenExpression, Expression eAST, Command cAST, SourcePosition thePosition) {
-    super (thePosition);
+    super (eAST, cAST, thePosition);
     Identifier = identifier;
     IdenExpression = idenExpression;
-    E = eAST;
-    C = cAST;
   }
 
   @Override
@@ -37,6 +35,4 @@ public class ForLoopCommand extends Command{
 
   public Identifier Identifier;
   public Expression IdenExpression;
-  public Expression E;
-  public Command C;
 }
