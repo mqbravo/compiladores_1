@@ -16,4 +16,7 @@ public abstract class DoLoopCommand extends LoopCommand{
     public DoLoopCommand(Expression eAST, Command cAST, SourcePosition thePosition) {
         super(eAST, cAST, thePosition);
     }
+
+    @Override
+    public abstract Object visit(Visitor v, Object o);
 }
