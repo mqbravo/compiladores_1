@@ -652,6 +652,84 @@ public class Parser {
     return declarationAST;
   }
 
+  Declaration parsePROC_FUNCS() throws SyntaxError{
+    Declaration declarationAST = null; // in case there's a syntactic error
+
+    SourcePosition declarationPos = new SourcePosition();
+    start(declarationPos);
+    Declaration dAST1 = null;
+    switch(currentToken.kind) {
+      case Token.PROC:
+      case Token.FUNC:
+        dAST1 = parsePROC_FUNC();
+        finish(declarationPos);
+        break;
+      default:
+        syntacticError("\"%\" error parsing proc-funcs, unexpected token",
+                currentToken.spelling);
+        break;
+    }
+    if(currentToken.kind == Token.AND){
+       acceptIt();
+       Declaration dAST2 = parsePROC_FUNC();
+       finish(declarationPos);
+       declarationAST = new SequentialDeclaration(dAST1, dAST2, declarationPos);
+       while(currentToken.kind == Token.AND) {
+         acceptIt();
+         start(declarationPos);
+         dAST1 = parsePROC_FUNC();
+         finish(declarationPos);
+         declarationAST = new SequentialDeclaration(declarationAST, dAST1, declarationPos);
+       }
+    }else{
+      declarationAST = dAST1;
+    }
+    return declarationAST;
+  }
+
+  Declaration parsePROC_FUNC() throws SyntaxError{
+    Declaration declarationAST = null; // in case there's a syntactic error
+
+    SourcePosition declarationPos = new SourcePosition();
+    start(declarationPos);
+    switch (currentToken.kind){
+      case Token.PROC:
+      {
+        acceptIt();
+        Identifier iAST = parseIdentifier();
+        accept(Token.LPAREN);
+        FormalParameterSequence fpsAST = parseFormalParameterSequence();
+
+        accept(Token.RPAREN);
+        accept(Token.IS);
+        Command cAST = parseSingleCommand();
+        accept(Token.END);
+        finish(declarationPos);
+        declarationAST = new ProcDeclaration(iAST, fpsAST, cAST, declarationPos);
+      }
+      break;
+
+      case Token.FUNC:
+      {
+        acceptIt();
+        Identifier iAST = parseIdentifier();
+        accept(Token.LPAREN);
+        FormalParameterSequence fpsAST = parseFormalParameterSequence();
+        accept(Token.RPAREN);
+        accept(Token.COLON);
+        TypeDenoter tAST = parseTypeDenoter();
+        accept(Token.IS);
+        Expression eAST = parseExpression();
+        finish(declarationPos);
+        declarationAST = new FuncDeclaration(iAST, fpsAST, tAST, eAST,
+                declarationPos);
+      }
+      break;
+    }
+
+    return declarationAST;
+  }
+
   Declaration parseSingleDeclaration() throws SyntaxError {
     Declaration declarationAST = null; // in case there's a syntactic error
 
@@ -682,37 +760,6 @@ public class Parser {
       }
       break;
 
-    case Token.PROC:
-      {
-        acceptIt();
-        Identifier iAST = parseIdentifier();
-        accept(Token.LPAREN);
-        FormalParameterSequence fpsAST = parseFormalParameterSequence();
-        accept(Token.RPAREN);
-        accept(Token.IS);
-        Command cAST = parseSingleCommand();
-        finish(declarationPos);
-        declarationAST = new ProcDeclaration(iAST, fpsAST, cAST, declarationPos);
-      }
-      break;
-
-    case Token.FUNC:
-      {
-        acceptIt();
-        Identifier iAST = parseIdentifier();
-        accept(Token.LPAREN);
-        FormalParameterSequence fpsAST = parseFormalParameterSequence();
-        accept(Token.RPAREN);
-        accept(Token.COLON);
-        TypeDenoter tAST = parseTypeDenoter();
-        accept(Token.IS);
-        Expression eAST = parseExpression();
-        finish(declarationPos);
-        declarationAST = new FuncDeclaration(iAST, fpsAST, tAST, eAST,
-          declarationPos);
-      }
-      break;
-
     case Token.TYPE:
       {
         acceptIt();
@@ -723,6 +770,11 @@ public class Parser {
         declarationAST = new TypeDeclaration(iAST, tAST, declarationPos);
       }
       break;
+
+      case Token.FUNC:
+      case Token.PROC:
+        declarationAST = parsePROC_FUNC();
+        break;
 
     default:
       syntacticError("\"%\" cannot start a declaration",
