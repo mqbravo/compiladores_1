@@ -155,12 +155,12 @@ public class TreeVisitor implements Visitor {
 
     @Override
     public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return(createUnary("Variable Recursive", ast.procFuncAST));
     }
 
     @Override
     public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return(createBinary("Variable Local", ast.dAST1, ast.dAST2));
     }
 
     // </editor-fold>
