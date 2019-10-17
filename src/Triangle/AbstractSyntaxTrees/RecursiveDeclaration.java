@@ -11,6 +11,6 @@ public class RecursiveDeclaration extends Declaration{
 
     @Override
     public Object visit(Visitor v, Object o) {
-        return null;
+        return v.visitRecursiveDeclaration(this, o);
     }
 }
