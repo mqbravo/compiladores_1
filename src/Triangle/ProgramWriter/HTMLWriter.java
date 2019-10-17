@@ -1,6 +1,5 @@
 package Triangle.ProgramWriter;
 
-import Triangle.AbstractSyntaxTrees.Program;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,14 +7,9 @@ import java.io.IOException;
 
 public class HTMLWriter {
 
-    private Program programAST;
+    private FileWriter fileWriter;
 
-    public HTMLWriter(Program programAST) {
-        this.programAST = programAST;
-    }
-
-    public void writeSourceProgram(){
-
+    public HTMLWriter() {
         //Create the output dir in case of needed
         File dir = new File("output/");
         dir.mkdirs();
@@ -24,14 +18,55 @@ public class HTMLWriter {
         File htmlFile = new File(dir, "source_program.html");
 
         //Helper file writer class
-        try (FileWriter fileWriter = new FileWriter(htmlFile)) {
+        try{
             //The HTML visitor writes to file with the fileWriter
-            HTMLWriterVisitor htmlVisitor = new HTMLWriterVisitor(fileWriter);
-            programAST.visit(htmlVisitor, null);
+            fileWriter = new FileWriter(htmlFile);
+
+            writeToHTMLFile("<!DOCTYPE html>");
+            writeToHTMLFile("\n");
+            writeToHTMLFile("<html>");
+            writeToHTMLFile("\n");
+
+            writeToHTMLFile("<p>");
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
+    public void writeKeyWord(String keyword){
+        writeToHTMLFile("<b>"+keyword+" </b>");
+    }
+
+    public void writeElse(String word){
+        writeToHTMLFile(word);
+    }
+
+    public void writeLiteral(String word){
+        writeToHTMLFile("<span style=\"color:blue\">" + word + "</span>");
+    }
+
+    public void writeComment(String comment){
+        writeToHTMLFile("<span style=\"color:green\">" + comment + "</span>");
+    }
+
+    public void finishHTML(){
+        writeToHTMLFile("</p>" + "\n" +
+                "</html>");
+        try {
+            fileWriter.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void writeToHTMLFile(String content){
+        try {
+            fileWriter.write(content);
+            fileWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
