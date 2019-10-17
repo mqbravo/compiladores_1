@@ -321,6 +321,16 @@ public final class Encoder implements Visitor {
     return new Integer(extraSize);
   }
 
+  //@todo implement
+  public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+    throw new UnsupportedOperationException("Not implemented yet.");
+  }
+
+  //@todo implement
+  public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
+    throw new UnsupportedOperationException("Not implemented yet.");
+  }
+
 
   // Array Aggregates
   public Object visitMultipleArrayAggregate(MultipleArrayAggregate ast,

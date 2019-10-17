@@ -308,6 +308,16 @@ public final class Checker implements Visitor {
     return null;
   }
 
+  //@todo implement
+  public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+    throw new UnsupportedOperationException("Not implemented yet.");
+  }
+
+  //@todo implement
+  public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
+    throw new UnsupportedOperationException("Not implemented yet.");
+  }
+
   // Array Aggregates
 
   // Returns the TypeDenoter for the Array Aggregate. Does not use the
