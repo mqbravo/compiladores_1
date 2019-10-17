@@ -14,8 +14,81 @@
 
 package Triangle.SyntacticAnalyzer;
 
-import Triangle.AbstractSyntaxTrees.*;
 import Triangle.ErrorReporter;
+import Triangle.AbstractSyntaxTrees.ActualParameter;
+import Triangle.AbstractSyntaxTrees.ActualParameterSequence;
+import Triangle.AbstractSyntaxTrees.ArrayAggregate;
+import Triangle.AbstractSyntaxTrees.ArrayExpression;
+import Triangle.AbstractSyntaxTrees.ArrayTypeDenoter;
+import Triangle.AbstractSyntaxTrees.AssignCommand;
+import Triangle.AbstractSyntaxTrees.BinaryExpression;
+import Triangle.AbstractSyntaxTrees.CallCommand;
+import Triangle.AbstractSyntaxTrees.CallExpression;
+import Triangle.AbstractSyntaxTrees.CharacterExpression;
+import Triangle.AbstractSyntaxTrees.CharacterLiteral;
+import Triangle.AbstractSyntaxTrees.Command;
+import Triangle.AbstractSyntaxTrees.ConstActualParameter;
+import Triangle.AbstractSyntaxTrees.ConstDeclaration;
+import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
+import Triangle.AbstractSyntaxTrees.Declaration;
+import Triangle.AbstractSyntaxTrees.DoUntilLoopCommand;
+import Triangle.AbstractSyntaxTrees.DoWhileLoopCommand;
+import Triangle.AbstractSyntaxTrees.DotVname;
+import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
+import Triangle.AbstractSyntaxTrees.EmptyCommand;
+import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
+import Triangle.AbstractSyntaxTrees.Expression;
+import Triangle.AbstractSyntaxTrees.FieldTypeDenoter;
+import Triangle.AbstractSyntaxTrees.ForLoopCommand;
+import Triangle.AbstractSyntaxTrees.FormalParameter;
+import Triangle.AbstractSyntaxTrees.FormalParameterSequence;
+import Triangle.AbstractSyntaxTrees.FuncActualParameter;
+import Triangle.AbstractSyntaxTrees.FuncDeclaration;
+import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
+import Triangle.AbstractSyntaxTrees.Identifier;
+import Triangle.AbstractSyntaxTrees.IfCommand;
+import Triangle.AbstractSyntaxTrees.IfExpression;
+import Triangle.AbstractSyntaxTrees.IntegerExpression;
+import Triangle.AbstractSyntaxTrees.IntegerLiteral;
+import Triangle.AbstractSyntaxTrees.LetCommand;
+import Triangle.AbstractSyntaxTrees.LetExpression;
+import Triangle.AbstractSyntaxTrees.LocalDeclaration;
+import Triangle.AbstractSyntaxTrees.LoopCommand;
+import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
+import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
+import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
+import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
+import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
+import Triangle.AbstractSyntaxTrees.Operator;
+import Triangle.AbstractSyntaxTrees.ProcActualParameter;
+import Triangle.AbstractSyntaxTrees.ProcDeclaration;
+import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
+import Triangle.AbstractSyntaxTrees.Program;
+import Triangle.AbstractSyntaxTrees.RecordAggregate;
+import Triangle.AbstractSyntaxTrees.RecordExpression;
+import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
+import Triangle.AbstractSyntaxTrees.RecursiveDeclaration;
+import Triangle.AbstractSyntaxTrees.SequentialCommand;
+import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
+import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
+import Triangle.AbstractSyntaxTrees.SimpleVname;
+import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
+import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
+import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
+import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
+import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
+import Triangle.AbstractSyntaxTrees.SubscriptVname;
+import Triangle.AbstractSyntaxTrees.TypeDeclaration;
+import Triangle.AbstractSyntaxTrees.TypeDenoter;
+import Triangle.AbstractSyntaxTrees.UnaryExpression;
+import Triangle.AbstractSyntaxTrees.VarActualParameter;
+import Triangle.AbstractSyntaxTrees.VarDeclaration;
+import Triangle.AbstractSyntaxTrees.VarFormalParameter;
+import Triangle.AbstractSyntaxTrees.Vname;
+import Triangle.AbstractSyntaxTrees.VnameExpression;
+import Triangle.AbstractSyntaxTrees.UntilLoopCommand;
+import Triangle.AbstractSyntaxTrees.VarDeclarationInitialized;
+import Triangle.AbstractSyntaxTrees.WhileLoopCommand;
 
 public class Parser {
 
@@ -232,59 +305,8 @@ public class Parser {
       {
           // Aceptamos el token del loop y pasamos al siguiente
           acceptIt();
-          //Para evaluar todas las posibles combinaciones del loop
-          switch(currentToken.kind){
-              case Token.WHILE:
-              case Token.UNTIL:
-              {
-                //Loop kind will store the kind of loop the user has asked
-                int loopKind = currentToken.kind;
-                acceptIt();
-                Expression eAST = parseExpression();
-                accept(Token.DO);
-                Command cAST = parseCommand();
-                finish(commandPos);
-                accept(Token.REPEAT);
-                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
-              }
-              break;
-              
-              case Token.DO:
-              {
-                acceptIt();
-                Command cAST = parseCommand();
-                finish(commandPos);
-                if(!(currentToken.kind == Token.WHILE || currentToken.kind == Token.UNTIL)){
-                    syntacticError("Unexpected \"%\"", currentToken.spelling);
-                }
-                int loopKind = currentToken.kind;
-                acceptIt();
-                Expression eAST = parseExpression();
-                accept(Token.REPEAT);
-                commandAST = new LoopCommand(eAST, cAST, commandPos, loopKind);
-                break;
-              }
-              
-              case Token.FOR:
-              {
-                acceptIt();
-                Identifier identificador = parseIdentifier();
-                accept(Token.IS);
-                Expression idenAST = parseExpression();
-                accept(Token.TO);
-                Expression eAST = parseExpression();
-                accept(Token.DO);
-                Command cAST = parseCommand();
-                accept(Token.REPEAT);
-                commandAST = new ForLoopCommand(identificador, idenAST, eAST, cAST, commandPos);
-                break;
-              }
-              default:
-              {
-                syntacticError("Unexpected \"%\"", currentToken.spelling);
-                break;
-              }
-          }
+          commandAST = this.parseLoopCommand();
+          accept(Token.REPEAT);
           break;
       }
     case Token.LET:
@@ -339,6 +361,67 @@ public class Parser {
     return commandAST;
   }
 
+  LoopCommand parseLoopCommand() throws SyntaxError{
+    LoopCommand commandAST = null;
+    
+    SourcePosition commandPos = new SourcePosition();
+    start(commandPos);
+    
+    switch(currentToken.kind){
+              case Token.WHILE:
+              case Token.UNTIL:
+              {
+                //Loop kind will store the kind of loop the user has asked
+                int loopKind = currentToken.kind;
+                acceptIt();
+                Expression eAST = parseExpression();
+                accept(Token.DO);
+                Command cAST = parseCommand();
+                finish(commandPos);
+                commandAST = loopKind == Token.WHILE ? 
+                        new WhileLoopCommand(eAST, cAST, commandPos):
+                        new UntilLoopCommand(eAST, cAST, commandPos);
+                break;
+              }              
+              case Token.DO:
+              {
+                acceptIt();
+                Command cAST = parseCommand();
+                finish(commandPos);
+                if(!(currentToken.kind == Token.WHILE || currentToken.kind == Token.UNTIL)){
+                    syntacticError("Unexpected \"%\"", currentToken.spelling);
+                }
+                int loopKind = currentToken.kind;
+                acceptIt();
+                Expression eAST = parseExpression();
+                commandAST = loopKind == Token.WHILE ? 
+                        new DoWhileLoopCommand(eAST, cAST, commandPos):
+                        new DoUntilLoopCommand(eAST, cAST, commandPos);
+                break;
+              }
+              
+              case Token.FOR:
+              {
+                acceptIt();
+                Identifier identificador = parseIdentifier();
+                accept(Token.IS);
+                Expression idenAST = parseExpression();
+                accept(Token.TO);
+                Expression eAST = parseExpression();
+                accept(Token.DO);
+                Command cAST = parseCommand();
+                commandAST = new ForLoopCommand(identificador, idenAST, eAST, cAST, commandPos);
+                break;
+              }
+              default:
+              {
+                syntacticError("Unexpected \"%\"", currentToken.spelling);
+                break;
+              }
+          }
+    return commandAST;
+  }
+  
 ///////////////////////////////////////////////////////////////////////////////
 //
 // EXPRESSIONS
@@ -732,7 +815,7 @@ public class Parser {
                     break;
                 /*
                  *  A single-Declaration, añadir lo siguiente:
-                 *  | “var” Identifier “init” Expression
+                 *  | "var" Identifier "init" Expression
                  */
                 case Token.INIT:
                     acceptIt();

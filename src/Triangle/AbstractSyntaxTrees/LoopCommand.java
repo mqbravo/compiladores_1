@@ -16,28 +16,23 @@ package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
-public class LoopCommand extends Command {
+public abstract class LoopCommand extends Command {
 
   /**
    * This creates a new LoopCommand AST
    * @param eAST It's control expression
    * @param cAST It's command
    * @param thePosition Where it can be found in the source
-   * @param tokenKind Two kinds of loop: While or Until
    */
-  public LoopCommand (Expression eAST, Command cAST, SourcePosition thePosition, int tokenKind) {
+  public LoopCommand (Expression eAST, Command cAST, SourcePosition thePosition) {
     super (thePosition);
     E = eAST;
     C = cAST;
-    T = tokenKind;
   }
 
   @Override
-  public Object visit(Visitor v, Object o) {
-    return v.visitLoopCommand(this, o);
-  }
+  public abstract Object visit(Visitor v, Object o);
 
   public Expression E;
   public Command C;
-  public int T;//Token.Kind
 }
