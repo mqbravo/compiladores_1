@@ -146,17 +146,34 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitEmptyExpression(EmptyExpression ast, Object o) {
+        writeToHTMLFile("\n<b>skip</b> \n");
         return null;
     }
 
     @Override
     public Object visitIfExpression(IfExpression ast, Object o) {
+
+        writeToHTMLFile("\n<b> if </b>");
+
+        ast.E1.visit(this,null);
+
+        writeToHTMLFile("<br> <b>then</b>");
+
+        writeToHTMLFile("<br>");
+        ast.E2.visit(this,null);
+
+        writeToHTMLFile("<br> <b>else</b>");
+
+        writeToHTMLFile("<br>");
+        ast.E3.visit(this,null);
+
+
+        writeToHTMLFile("<br> <b> end </b>");
         return null;
     }
 
     @Override
-    public Object visitIntegerExpression(IntegerExpression ast, Object o) {
-        return null;
+    public Object visitIntegerExpression(IntegerExpression ast, Object o) {return null;
     }
 
     @Override
@@ -407,11 +424,13 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitCharacterLiteral(CharacterLiteral ast, Object o) {
+
         return null;
     }
 
     @Override
     public Object visitIntegerLiteral(IntegerLiteral ast, Object o) {
+
         return null;
     }
 
