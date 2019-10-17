@@ -57,8 +57,12 @@ public class XMLWriterVisitor implements Visitor {
     @Override
     public Object visitLetCommand(LetCommand ast, Object o) {
       writeToXMLFile("<Let Command>\n");
-        ast.D.visit(this, null);
-        ast.C.visit(this, null);
+        writeToXMLFile("<Declarations>\n");
+          ast.D.visit(this, null);
+        writeToXMLFile("</Declarations>\n");
+        writeToXMLFile("<Command>\n");
+          ast.C.visit(this, null);
+        writeToXMLFile("</Command>\n");
       writeToXMLFile("</Let Command>\n");
       return null;
     }
