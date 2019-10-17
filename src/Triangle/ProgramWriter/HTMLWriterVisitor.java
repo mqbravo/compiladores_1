@@ -488,11 +488,13 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitCharacterLiteral(CharacterLiteral ast, Object o) {
+
         return null;
     }
 
     @Override
     public Object visitIntegerLiteral(IntegerLiteral ast, Object o) {
+
         return null;
     }
 
