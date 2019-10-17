@@ -21,36 +21,80 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitAssignCommand(AssignCommand ast, Object o) {
+        ast.V.visit(this,null);
+        writeToHTMLFile(":=");
+        ast.E.visit(this,null);
+
         return null;
     }
 
     @Override
-    public Object visitCallCommand(CallCommand ast, Object o) {
-        return null;
-    }
+    public Object visitCallCommand(CallCommand ast, Object o){
+        ast.I.visit(this, null);
+        writeToHTMLFile("(");
+        ast.APS.visit(this, null);
+        writeToHTMLFile(")");
+
+        return null;}
 
     @Override
     public Object visitEmptyCommand(EmptyCommand ast, Object o) {
+        writeToHTMLFile("\n<b>skip</b> \n");
         return null;
     }
 
     @Override
     public Object visitIfCommand(IfCommand ast, Object o) {
+        writeToHTMLFile("\n<b> if </b>");
+
+        ast.E.visit(this,null);
+
+        writeToHTMLFile("<br> <b>then</b>");
+
+        writeToHTMLFile("<br>");
+        ast.C1.visit(this,null);
+
+        writeToHTMLFile("<br> <b>else</b>");
+
+        writeToHTMLFile("<br>");
+        ast.C2.visit(this,null);
+
+
+        writeToHTMLFile("<br> <b> end </b>");
         return null;
     }
 
     @Override
     public Object visitLetCommand(LetCommand ast, Object o) {
+        writeToHTMLFile("<p>\n <b> let </b> \n</p>");
+        ast.D.visit(this,null);
+        writeToHTMLFile("<p>\n <b> in </b> \n</p>");
+        ast.C.visit(this, null);
+        writeToHTMLFile("<p>\n <b> end </b> \n</p>");
         return null;
     }
 
     @Override
     public Object visitSequentialCommand(SequentialCommand ast, Object o) {
+        writeToHTMLFile("<p>");
+        ast.C1.visit(this,null);
+        writeToHTMLFile(";");
+        writeToHTMLFile("</p>");
+        ast.C2.visit(this,null);
         return null;
     }
 
     @Override
     public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
+        writeToHTMLFile("<b> while </b>");
+        ast.E.visit(this, null);
+        writeToHTMLFile("<b> do </b>");
+
+        writeToHTMLFile("<br>");
+        ast.C.visit(this, null);
+
+        writeToHTMLFile("<br> <b> repeat </b>");
+
         return null;
     }
 
@@ -144,6 +188,7 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object o) {
+
         return null;
     }
 
@@ -179,6 +224,11 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitVarDeclaration(VarDeclaration ast, Object o) {
+        writeToHTMLFile("<p>\n<b> var </b>\n");
+        ast.I.visit(this,null);
+        writeToHTMLFile(" : ");
+        ast.T.visit(this,null);
+        writeToHTMLFile("</p>");
         return null;
     }
 
@@ -297,16 +347,20 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitArrayTypeDenoter(ArrayTypeDenoter ast, Object o) {
+        writeToHTMLFile("<b> Array </b>");
         return null;
     }
 
     @Override
     public Object visitBoolTypeDenoter(BoolTypeDenoter ast, Object o) {
+        writeToHTMLFile("<b> Boolean </b>");
+
         return null;
     }
 
     @Override
     public Object visitCharTypeDenoter(CharTypeDenoter ast, Object o) {
+        writeToHTMLFile("<b> Char </b>");
         return null;
     }
 
@@ -317,11 +371,15 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitSimpleTypeDenoter(SimpleTypeDenoter ast, Object o) {
+        writeToHTMLFile("<b>");
+        ast.I.visit(this,null);
+        writeToHTMLFile("</b>");
         return null;
     }
 
     @Override
     public Object visitIntTypeDenoter(IntTypeDenoter ast, Object o) {
+        writeToHTMLFile("<b> Integer </b>");
         return null;
     }
 
@@ -388,6 +446,14 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitProgram(Program ast, Object o) {
+        writeToHTMLFile("<!DOCTYPE html>");
+        writeToHTMLFile("\n");
+        writeToHTMLFile("<html>");
+        writeToHTMLFile("\n");
+
+        ast.C.visit(this,null);
+
+        writeToHTMLFile("</html>");
         return null;
     }
 
@@ -399,6 +465,7 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitIdentifier(Identifier ast, Object o) {
+        writeToHTMLFile(ast.spelling);
         return null;
     }
 
