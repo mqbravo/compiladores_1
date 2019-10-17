@@ -35,7 +35,7 @@ public class HTMLWriter {
     }
 
     public void writeKeyWord(String keyword){
-        writeToHTMLFile("<b>"+keyword+" </b>");
+        writeToHTMLFile("<b>"+keyword+"</b>");
     }
 
     public void writeElse(String word){
@@ -47,7 +47,7 @@ public class HTMLWriter {
     }
 
     public void writeComment(String comment){
-        writeToHTMLFile("<span style=\"color:green\">" + comment + "</span>");
+        writeToHTMLFile("<span style=\"color:green\">" + comment + "</span><br>\n");
     }
 
     public void finishHTML(){

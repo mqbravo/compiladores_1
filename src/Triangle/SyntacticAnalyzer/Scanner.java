@@ -85,22 +85,27 @@ public final class Scanner {
       {
         takeIt();
         String comment = "!";
-        while ((currentChar != SourceFile.EOL) && (currentChar != SourceFile.EOT)) {
+        while ((currentChar != SourceFile.EOL) && (currentChar != SourceFile.CR) && (currentChar != SourceFile.EOT)) {
           comment = comment + currentChar;
           takeIt();
         }
+        if (currentChar == SourceFile.CR) {
+          takeIt();
+        }
         if (currentChar == SourceFile.EOL) {
-          comment = comment + currentChar;
           takeIt();
         }
         this.htmlWriter.writeComment(comment);
       }
       break;
     case '\n':
-      htmlWriter.writeElse("<br>");
+      htmlWriter.writeElse("<br>\n");
       takeIt();
       break;
-    case ' ': case '\r': case '\t':
+    case '\r':
+      takeIt();
+      break;
+    case ' ': case '\t':
       htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       break;
