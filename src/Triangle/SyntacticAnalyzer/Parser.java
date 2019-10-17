@@ -708,43 +708,88 @@ public class Parser {
 
     switch (currentToken.kind) {
 
-    case Token.CONST:
-      {
-        acceptIt();
-        Identifier iAST = parseIdentifier();
-        accept(Token.IS);
-        Expression eAST = parseExpression();
-        finish(declarationPos);
-        declarationAST = new ConstDeclaration(iAST, eAST, declarationPos);
-      }
-      break;
-
-    case Token.VAR:
-      {
-        acceptIt();
-        Identifier iAST = parseIdentifier();
-        accept(Token.COLON);
-        TypeDenoter tAST = parseTypeDenoter();
-        finish(declarationPos);
-        declarationAST = new VarDeclaration(iAST, tAST, declarationPos);
-      }
-      break;
-
-    case Token.TYPE:
-      {
-        acceptIt();
-        Identifier iAST = parseIdentifier();
-        accept(Token.IS);
-        TypeDenoter tAST = parseTypeDenoter();
-        finish(declarationPos);
-        declarationAST = new TypeDeclaration(iAST, tAST, declarationPos);
-      }
-      break;
-
-      case Token.FUNC:
-      case Token.PROC:
-        declarationAST = parsePROC_FUNC();
+        case Token.CONST: {
+            acceptIt();
+            Identifier iAST = parseIdentifier();
+            accept(Token.IS);
+            Expression eAST = parseExpression();
+            finish(declarationPos);
+            declarationAST = new ConstDeclaration(iAST, eAST, declarationPos);
+        }
         break;
+
+        case Token.VAR: {
+            acceptIt();
+            Identifier iAST = parseIdentifier();
+
+            switch(currentToken.kind){
+                /* | var Identifier : Type-denoter */
+                case Token.COLON:
+                    acceptIt();
+                    TypeDenoter tAST = parseTypeDenoter();
+                    finish(declarationPos);
+                    declarationAST = new VarDeclaration(iAST, tAST, declarationPos);
+                    break;
+                /*
+                 *  A single-Declaration, añadir lo siguiente:
+                 *  | “var” Identifier “init” Expression
+                 */
+                case Token.INIT:
+                    acceptIt();
+                    Expression eAST = parseExpression();
+                    finish(declarationPos);
+                    declarationAST = new VarDeclarationInitialized(iAST,eAST,declarationPos); //Needed to change
+                    break;
+            }
+        }
+        break;
+
+        case Token.TYPE: {
+            acceptIt();
+            Identifier iAST = parseIdentifier();
+            accept(Token.IS);
+            TypeDenoter tAST = parseTypeDenoter();
+            finish(declarationPos);
+            declarationAST = new TypeDeclaration(iAST, tAST, declarationPos);
+        }
+        break;
+
+        case Token.FUNC:
+        {
+            acceptIt();
+            Identifier iAST = parseIdentifier();
+            accept(Token.LPAREN);
+            FormalParameterSequence fpsAST = parseFormalParameterSequence();
+            accept(Token.RPAREN);
+            accept(Token.COLON);
+            TypeDenoter tAST = parseTypeDenoter();
+            accept(Token.IS);
+            Expression eAST = parseExpression();
+            finish(declarationPos);
+            declarationAST = new FuncDeclaration(iAST, fpsAST, tAST, eAST,
+                    declarationPos);
+        }
+        break;
+      case Token.PROC:
+      {
+          acceptIt();
+          Identifier iAST = parseIdentifier();
+          accept(Token.LPAREN);
+          FormalParameterSequence fpsAST = parseFormalParameterSequence();
+          accept(Token.RPAREN);
+          accept(Token.IS);
+
+          /*CAMBIOS
+           *   Modificar la opcion referente a proc para que se lea:
+           *   "proc" Identifier "(" Formal-Parameter-Sequence ")" "~" Command "end"
+           */
+          //Command cAST = parseSingleCommand(); (DELETED)
+          Command cAST = parseCommand(); //(MODIFIED)
+          accept(Token.END); //(ADDED)
+          finish(declarationPos);
+          declarationAST = new ProcDeclaration(iAST, fpsAST, cAST, declarationPos);
+      }
+      break;
 
     default:
       syntacticError("\"%\" cannot start a declaration",
