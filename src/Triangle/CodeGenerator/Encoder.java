@@ -24,7 +24,6 @@ import TAM.Machine;
 import Triangle.AbstractSyntaxTrees.*;
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public final class Encoder implements Visitor {
 
@@ -312,7 +311,7 @@ public final class Encoder implements Visitor {
 
   //@TODO Implement
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException("Not implemented yet.");
   }
 
   //@todo implement

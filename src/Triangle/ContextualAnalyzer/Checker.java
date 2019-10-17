@@ -18,7 +18,6 @@ import Triangle.AbstractSyntaxTrees.*;
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
 import Triangle.SyntacticAnalyzer.SourcePosition;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public final class Checker implements Visitor {
 
@@ -300,7 +299,7 @@ public final class Checker implements Visitor {
 
   //@TODO Implement
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException("Not implemented yet.");
   }
 
   //@todo implement

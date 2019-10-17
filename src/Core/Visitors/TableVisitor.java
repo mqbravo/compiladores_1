@@ -13,7 +13,6 @@ import Triangle.CodeGenerator.KnownValue;
 import Triangle.CodeGenerator.UnknownAddress;
 import Triangle.CodeGenerator.UnknownRoutine;
 import Triangle.CodeGenerator.UnknownValue;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -265,10 +264,10 @@ public class TableVisitor implements Visitor {
   }
     //@ TODO: IMPLEMENT
     public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
+    //@ TODO: IMPLEMENT
     public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
