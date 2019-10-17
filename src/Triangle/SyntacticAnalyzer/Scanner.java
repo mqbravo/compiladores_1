@@ -96,8 +96,11 @@ public final class Scanner {
         this.htmlWriter.writeComment(comment);
       }
       break;
-
-    case ' ': case '\n': case '\r': case '\t':
+    case '\n':
+      htmlWriter.writeElse("<br>");
+      takeIt();
+      break;
+    case ' ': case '\r': case '\t':
       htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       break;
@@ -249,7 +252,13 @@ public final class Scanner {
     kind = scanToken();
 
     pos.finish = sourceFile.getCurrentLine();
+    boolean wasIdentifier = (kind == Token.IDENTIFIER);
     tok = new Token(kind, currentSpelling.toString(), pos);
+    if(wasIdentifier && tok.kind != Token.IDENTIFIER)
+      this.htmlWriter.writeKeyWord(tok.spelling);
+    else if (wasIdentifier){
+      this.htmlWriter.writeElse(tok.spelling);
+    }
     if (debug)
       System.out.println(tok);
     return tok;
