@@ -86,7 +86,7 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
-        writeToHTMLFile("<b> while </b>");
+        writeToHTMLFile("<b> loop while </b>");
         ast.E.visit(this, null);
         writeToHTMLFile("<b> do </b>");
 
@@ -100,21 +100,62 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
+        writeToHTMLFile("<b> loop do </b>");
+
+        writeToHTMLFile("<br>");
+        ast.C.visit(this, null);
+
+        writeToHTMLFile("<br>");
+        writeToHTMLFile("<b> while </b>");
+        ast.E.visit(this, null);
+
         return null;
     }
 
     @Override
     public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
+        writeToHTMLFile("<b> loop until </b>");
+        ast.E.visit(this, null);
+        writeToHTMLFile("<b> do </b>");
+
+        writeToHTMLFile("<br>");
+        ast.C.visit(this, null);
+
+        writeToHTMLFile("<br> <b> repeat </b>");
+
         return null;
     }
 
     @Override
     public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
+        writeToHTMLFile("<b> loop do </b>");
+
+        writeToHTMLFile("<br>");
+        ast.C.visit(this, null);
+
+        writeToHTMLFile("<br>");
+        writeToHTMLFile("<b> until </b>");
+        ast.E.visit(this, null);
+
         return null;
     }
 
     @Override
     public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
+        writeToHTMLFile("<b> loop for </b>");
+        ast.Identifier.visit(this, null);
+        writeToHTMLFile("~");
+        ast.IdenExpression.visit(this, null);
+        writeToHTMLFile("<b> to </b>");
+        ast.E.visit(this, null);
+        writeToHTMLFile("<b> do </b>");
+
+        writeToHTMLFile("<br>");
+        ast.C.visit(this, null);
+
+        writeToHTMLFile("<br>");
+        writeToHTMLFile("<b> repeat </b>");
+
         return null;
     }
 
@@ -126,56 +167,96 @@ public class HTMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitArrayExpression(ArrayExpression ast, Object o) {
+        writeToHTMLFile("[");
+        ast.AA.visit(this, null);
+        writeToHTMLFile("]");
+
         return null;
     }
 
     @Override
     public Object visitBinaryExpression(BinaryExpression ast, Object o) {
+        ast.E1.visit(this, null);
+        ast.O.visit(this, null);
+        ast.E2.visit(this, null);
         return null;
     }
 
     @Override
     public Object visitCallExpression(CallExpression ast, Object o) {
+        ast.I.visit(this, null);
+        writeToHTMLFile("(");
+        ast.APS.visit(this, null);
+        writeToHTMLFile(")");
+
         return null;
     }
 
     @Override
     public Object visitCharacterExpression(CharacterExpression ast, Object o) {
+        ast.CL.visit(this, null);
         return null;
     }
 
     @Override
     public Object visitEmptyExpression(EmptyExpression ast, Object o) {
+        //TODO
         return null;
     }
 
     @Override
     public Object visitIfExpression(IfExpression ast, Object o) {
+        writeToHTMLFile("\n<b> if </b>");
+
+        ast.E1.visit(this,null);
+
+        writeToHTMLFile("<br> <b>then</b>");
+
+        writeToHTMLFile("<br>");
+        ast.E2.visit(this,null);
+
+        writeToHTMLFile("<br> <b>else</b>");
+
+        writeToHTMLFile("<br>");
+        ast.E3.visit(this,null);
         return null;
     }
 
     @Override
     public Object visitIntegerExpression(IntegerExpression ast, Object o) {
+        ast.IL.visit(this, null);
         return null;
     }
 
     @Override
     public Object visitLetExpression(LetExpression ast, Object o) {
+        writeToHTMLFile("<p>\n <b> let </b> \n</p>");
+        ast.D.visit(this,null);
+        writeToHTMLFile("<p>\n <b> in </b> \n</p>");
+        ast.E.visit(this, null);
+        writeToHTMLFile("<p>\n <b> end </b> \n</p>");
+
         return null;
     }
 
     @Override
     public Object visitRecordExpression(RecordExpression ast, Object o) {
+        writeToHTMLFile("{");
+        ast.RA.visit(this, null);
+        writeToHTMLFile("}");
+
         return null;
     }
 
     @Override
     public Object visitUnaryExpression(UnaryExpression ast, Object o) {
+        //TODO
         return null;
     }
 
     @Override
     public Object visitVnameExpression(VnameExpression ast, Object o) {
+        ast.V.visit(this, null);
         return null;
     }
 
