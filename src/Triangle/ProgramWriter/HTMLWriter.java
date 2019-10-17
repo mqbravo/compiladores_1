@@ -14,7 +14,7 @@ public class HTMLWriter {
         this.programAST = programAST;
     }
 
-    public void writeSourceProgram() throws IOException {
+    public void writeSourceProgram(){
 
         //Create the output dir in case of needed
         File dir = new File("output/");
@@ -25,13 +25,14 @@ public class HTMLWriter {
         File htmlFile = new File(dir, "source_program.html");
 
         //Helper file writer class
-        FileWriter fileWriter = new FileWriter(htmlFile);
+        try (FileWriter fileWriter = new FileWriter(htmlFile)) {
+            //The HTML visitor writes to file with the fileWriter
+            HTMLWriterVisitor htmlVisitor = new HTMLWriterVisitor(fileWriter);
+            programAST.visit(htmlVisitor, null);
 
-        //The HTML visitor writes to file with the fileWriter
-        HTMLWriterVisitor htmlVisitor = new HTMLWriterVisitor(fileWriter);
-        programAST.visit(htmlVisitor, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        //Don't forget to close!
-        fileWriter.close();
     }
 }

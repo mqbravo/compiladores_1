@@ -14,7 +14,7 @@ public class XMLWriter{
         this.programAST = programAST;
     }
 
-    public void writeProgramAST() throws IOException {
+    public void writeProgramAST() {
 
         //Create the output dir in case of needed
         File dir = new File("output/");
@@ -25,14 +25,15 @@ public class XMLWriter{
         File xmlFile = new File(dir, "program_ast.xml");
 
         //Helper file writer class
-        FileWriter fileWriter = new FileWriter(xmlFile);
+        try (FileWriter fileWriter = new FileWriter(xmlFile)) {
+            //The XML visitor writes to file with the fileWriter
+            XMLWriterVisitor xmlVisitor = new XMLWriterVisitor(fileWriter);
+            programAST.visit(xmlVisitor, null);
 
-        //The XML visitor writes to file with the fileWriter
-        XMLWriterVisitor xmlVisitor = new XMLWriterVisitor(fileWriter);
-        programAST.visit(xmlVisitor, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        //Don't forget to close!
-        fileWriter.close();
     }
 
 }
