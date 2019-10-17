@@ -13,6 +13,8 @@ import Triangle.CodeGenerator.KnownValue;
 import Triangle.CodeGenerator.UnknownAddress;
 import Triangle.CodeGenerator.UnknownRoutine;
 import Triangle.CodeGenerator.UnknownValue;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -261,19 +263,9 @@ public class TableVisitor implements Visitor {
       ast.T.visit(this, null);
       return(null);
   }
-    //Added
+    //@ TODO: IMPLEMENT
     public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-        try {
-            addIdentifier(ast.I.spelling,
-                    "KnownAddress",
-                    (ast.entity!=null?ast.entity.size:0),
-                    ((KnownAddress)ast.entity).address.level,
-                    ((KnownAddress)ast.entity).address.displacement,
-                    -1);
-        } catch (NullPointerException e) { }
-
-        ast.E.visit(this, null);
-        return(null);
+        throw new NotImplementedException();
     }
 
     @Override

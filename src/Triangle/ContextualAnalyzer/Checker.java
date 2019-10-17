@@ -18,6 +18,7 @@ import Triangle.AbstractSyntaxTrees.*;
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
 import Triangle.SyntacticAnalyzer.SourcePosition;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public final class Checker implements Visitor {
 
@@ -297,15 +298,9 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  //Added
+  //@TODO Implement
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    ast.E = (Expression) ast.E.visit(this, null);
-    idTable.enter (ast.I.spelling, ast);
-    if (ast.duplicated)
-      reporter.reportError ("identifier \"%\" already declared",
-              ast.I.spelling, ast.position);
-
-    return null;
+    throw new NotImplementedException();
   }
 
   //@todo implement

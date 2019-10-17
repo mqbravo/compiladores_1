@@ -738,7 +738,7 @@ public class Parser {
                     acceptIt();
                     Expression eAST = parseExpression();
                     finish(declarationPos);
-                    declarationAST = new VarDeclarationInitialized(iAST,eAST,declarationPos); //Needed to change
+                    declarationAST = new VarDeclarationInitialized(iAST,eAST,declarationPos);
                     break;
             }
         }

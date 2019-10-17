@@ -24,6 +24,7 @@ import TAM.Machine;
 import Triangle.AbstractSyntaxTrees.*;
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public final class Encoder implements Visitor {
 
@@ -309,16 +310,9 @@ public final class Encoder implements Visitor {
     return new Integer(extraSize);
   }
 
-  //Added
+  //@TODO Implement
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    Frame frame = (Frame) o;
-    int extraSize;
-
-    extraSize = ((Integer) ast.E.visit(this, null)).intValue();
-    emit(Machine.PUSHop, 0, 0, extraSize);
-    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
-    writeTableDetails(ast);
-    return new Integer(extraSize);
+    throw new NotImplementedException();
   }
 
   //@todo implement
