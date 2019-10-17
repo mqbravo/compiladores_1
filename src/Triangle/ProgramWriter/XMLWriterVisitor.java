@@ -4,13 +4,14 @@ import Triangle.AbstractSyntaxTrees.*;
 
 import java.io.FileWriter;
 
-public class HTMLWriterVisitor implements Visitor {
+public class XMLWriterVisitor implements Visitor {
 
     private FileWriter fileWriter;
 
-    public HTMLWriterVisitor(FileWriter fileWriter){
+    public XMLWriterVisitor(FileWriter fileWriter) {
         this.fileWriter = fileWriter;
     }
+
 
     ///////////////////////////////////////////////////////////////////////////////
     //

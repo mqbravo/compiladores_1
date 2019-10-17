@@ -6,32 +6,33 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class HTMLWriter {
+public class XMLWriter{
 
     private Program programAST;
 
-    public HTMLWriter(Program programAST) {
+    public XMLWriter(Program programAST) {
         this.programAST = programAST;
     }
 
-    public void writeSourceProgram() throws IOException {
+    public void writeProgramAST() throws IOException {
 
         //Create the output dir in case of needed
         File dir = new File("output/");
         if(!dir.mkdirs())
             return;
 
-        //The HTML file to write into
-        File htmlFile = new File(dir, "source_program.html");
+        //The XML file to write into
+        File xmlFile = new File(dir, "program_ast.xml");
 
         //Helper file writer class
-        FileWriter fileWriter = new FileWriter(htmlFile);
+        FileWriter fileWriter = new FileWriter(xmlFile);
 
-        //The HTML visitor writes to file with the fileWriter
-        HTMLWriterVisitor htmlVisitor = new HTMLWriterVisitor(fileWriter);
-        programAST.visit(htmlVisitor, null);
+        //The XML visitor writes to file with the fileWriter
+        XMLWriterVisitor xmlVisitor = new XMLWriterVisitor(fileWriter);
+        programAST.visit(xmlVisitor, null);
 
         //Don't forget to close!
         fileWriter.close();
     }
+
 }
