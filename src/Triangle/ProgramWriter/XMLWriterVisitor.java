@@ -7,13 +7,13 @@ import java.io.IOException;
 
 public class XMLWriterVisitor implements Visitor {
 
-    private FileWriter fileWriter;
+    private final FileWriter fileWriter;
 
     public XMLWriterVisitor(FileWriter fileWriter) {
         this.fileWriter = fileWriter;
     }
-
-
+    
+    // <editor-fold defaultstate="collapsed" desc=" Commands ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // COMMANDS
@@ -22,59 +22,106 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitAssignCommand(AssignCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<Assign Command>\n");
+        ast.V.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</Assign Command>\n");
+      return null;
     }
 
     @Override
     public Object visitCallCommand(CallCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<Call Command>\n");
+        ast.I.visit(this, null);
+        ast.APS.visit(this, null);
+      writeToXMLFile("</Call Command>\n");
+      return null;
     }
 
     @Override
     public Object visitEmptyCommand(EmptyCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<Empty Command/>\n");      
+      return null;
     }
 
     @Override
     public Object visitIfCommand(IfCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<If Command>\n");
+        ast.E.visit(this, null);
+        ast.C1.visit(this, null);
+        ast.C2.visit(this, null);
+      writeToXMLFile("</If Command>\n");
+      return null;
     }
 
     @Override
     public Object visitLetCommand(LetCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<Let Command>\n");
+        ast.D.visit(this, null);
+        ast.C.visit(this, null);
+      writeToXMLFile("</Let Command>\n");
+      return null;
     }
 
     @Override
     public Object visitSequentialCommand(SequentialCommand ast, Object o) {
+      writeToXMLFile("<Sequential Command>\n");
+        ast.C1.visit(this, null);
+        ast.C2.visit(this, null);
+      writeToXMLFile("</Sequential Command>\n");
         return null;
     }
 
     @Override
     public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
+      writeToXMLFile("<While Loop Command>\n");
+        ast.E.visit(this, null);
+        ast.C.visit(this, null);
+      writeToXMLFile("</While Loop Command>\n");
         return null;
     }
 
     @Override
     public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<Do-While Loop Command>\n");
+        ast.E.visit(this, null);
+        ast.C.visit(this, null);
+      writeToXMLFile("</Do-While Loop Command>\n");
+      return null;
     }
 
     @Override
     public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<Until Loop Command>\n");
+        ast.E.visit(this, null);
+        ast.C.visit(this, null);
+      writeToXMLFile("</Until Loop Command>\n");
+      return null;
     }
 
     @Override
     public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<Do-Until Loop Command>\n");
+        ast.E.visit(this, null);
+        ast.C.visit(this, null);
+      writeToXMLFile("</Do-Until Loop Command>\n");
+      return null;
     }
 
     @Override
     public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-        return null;
+      writeToXMLFile("<For Loop Command>\n");
+        ast.Identifier.visit(this, null);
+        ast.IdenExpression.visit(this, null);
+        ast.E.visit(this, null);
+        ast.C.visit(this, null);
+      writeToXMLFile("</For Loop Command>\n");
+      return null;
     }
 
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc=" Expressions ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // EXPRESSIONS
@@ -83,60 +130,101 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitArrayExpression(ArrayExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Array Expression>\n");
+        ast.AA.visit(this, null);
+        ast.type.visit(this, null);
+      writeToXMLFile("</Array Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitBinaryExpression(BinaryExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Binary Expression>\n");
+        ast.E1.visit(this, null);
+        ast.O.visit(this, null);
+        ast.E2.visit(this, null);        
+      writeToXMLFile("</Binary Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitCallExpression(CallExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Call Expression>\n");
+        ast.I.visit(this, null);
+        ast.APS.visit(this, null);
+      writeToXMLFile("</Call Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitCharacterExpression(CharacterExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Character Expression>\n");
+        ast.CL.visit(this, null);
+      writeToXMLFile("</Character Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitEmptyExpression(EmptyExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Empty Expression/>\n");
+      return null;
     }
 
     @Override
     public Object visitIfExpression(IfExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<If Expression>\n");
+        ast.E1.visit(this, null);
+        ast.E2.visit(this, null);
+        ast.E3.visit(this, null);
+      writeToXMLFile("</If Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitIntegerExpression(IntegerExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Integer Expression>\n");
+        ast.IL.visit(this, null);
+      writeToXMLFile("</Integer Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitLetExpression(LetExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Let Expression>\n");
+        ast.D.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</Let Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitRecordExpression(RecordExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Record Expression>\n");
+        ast.RA.visit(this, null);
+      writeToXMLFile("</Record Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitUnaryExpression(UnaryExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Unary Expression>\n");
+        ast.O.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</Unary Expression>\n");
+      return null;
     }
 
     @Override
     public Object visitVnameExpression(VnameExpression ast, Object o) {
-        return null;
+      writeToXMLFile("<Vname Expression>\n");
+        ast.V.visit(this, null);
+      writeToXMLFile("</Vname Expression>\n");
+      return null;
     }
 
-
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" Declarations ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // DECLARATIONS
@@ -145,44 +233,85 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("Binary Operator Declaration>\n");
+        ast.ARG1.visit(this, null);
+        ast.ARG2.visit(this, null);
+        ast.O.visit(this, null);
+        ast.RES.visit(this, null);
+      writeToXMLFile("</Binary Operator Declaration>\n");
+      return null;
     }
 
     @Override
     public Object visitConstDeclaration(ConstDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("<Const Declaration>\n");
+        ast.I.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</Const Declaration>\n");
+      return null;
     }
 
     @Override
     public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("<Func Declaration>\n");
+        ast.I.visit(this, null);
+        ast.FPS.visit(this, null);
+        ast.T.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</Func Declaration>\n");
+      return null;
     }
 
     @Override
     public Object visitProcDeclaration(ProcDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("<Proc Declaration>\n");
+        ast.I.visit(this, null);
+        ast.FPS.visit(this, null);
+        ast.C.visit(this, null);
+      writeToXMLFile("</Proc Declaration>\n");
+      return null;
     }
 
     @Override
     public Object visitSequentialDeclaration(SequentialDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("<Sequential Declaration>\n");
+        ast.D1.visit(this, null);
+        ast.D2.visit(this, null);
+      writeToXMLFile("</Sequential Declaration>\n");
+      return null;
     }
 
     @Override
     public Object visitTypeDeclaration(TypeDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("<Type Declaration>\n");
+        ast.I.visit(this, null);
+        ast.T.visit(this, null);
+      writeToXMLFile("</Type Declaration>\n");
+      return null;
     }
 
     @Override
     public Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("<Unary Operator Declaration>\n");
+        ast.ARG.visit(this, null);
+        ast.O.visit(this, null);
+        ast.RES.visit(this, null);
+      writeToXMLFile("</Unary Operator Declaration>\n");
+      return null;
     }
 
     @Override
     public Object visitVarDeclaration(VarDeclaration ast, Object o) {
-        return null;
+      writeToXMLFile("<Var Declaration>\n");
+        ast.I.visit(this, null);
+        ast.T.visit(this, null);
+      writeToXMLFile("</Var Declaration>\n");
+      return null;
     }
 
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // ARRAY AGGREGATES
@@ -191,24 +320,43 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitMultipleArrayAggregate(MultipleArrayAggregate ast, Object o) {
-        return null;
+      writeToXMLFile("<Multiple Array Aggregate>\n");
+        ast.E.visit(this, null);
+        ast.AA.visit(this, null);
+      writeToXMLFile("</Multiple Array Aggregate>\n");
+      return null;
     }
 
     @Override
     public Object visitSingleArrayAggregate(SingleArrayAggregate ast, Object o) {
-        return null;
+      writeToXMLFile("<Single Array Aggregate>\n");
+        ast.E.visit(this, null);
+      writeToXMLFile("</Single Array Aggregate>\n");
+      return null;
     }
 
     @Override
     public Object visitMultipleRecordAggregate(MultipleRecordAggregate ast, Object o) {
-        return null;
+      writeToXMLFile("<Multiple Record Aggregate>\n");
+        ast.I.visit(this, null);
+        ast.E.visit(this, null);
+        ast.RA.visit(this, null);
+      writeToXMLFile("</Multiple Record Aggregate>\n");
+      return null;
     }
 
     @Override
     public Object visitSingleRecordAggregate(SingleRecordAggregate ast, Object o) {
-        return null;
+      writeToXMLFile("<Single Record Aggregate>\n");
+        ast.I.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</Single Record Aggregate\n>");
+      return null;
     }
 
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" Parameters ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // PARAMETERS
@@ -217,74 +365,122 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitConstFormalParameter(ConstFormalParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Const Formal Parameters>/n");
+        ast.I.visit(this, null);
+        ast.T.visit(this, null);
+      writeToXMLFile("</Const Formal Parameters>/n");
+      return null;
     }
 
     @Override
     public Object visitFuncFormalParameter(FuncFormalParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Func Formal Parameter>\n");
+        ast.I.visit(this, null);
+        ast.FPS.visit(this, null);
+        ast.T.visit(this, null);
+      writeToXMLFile("</Func Formal Parameter>\n");
+      return null;
     }
 
     @Override
     public Object visitProcFormalParameter(ProcFormalParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Proc Formal Parameter>\n");
+        ast.I.visit(this, null);
+        ast.FPS.visit(this, null);
+      writeToXMLFile("</Proc Formal Parameter>\n");
+      return null;
     }
 
     @Override
     public Object visitVarFormalParameter(VarFormalParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Var Formal Parameter>\n");
+        ast.I.visit(this, null);
+        ast.T.visit(this, null);
+      writeToXMLFile("</Var Formal Parameter>\n");
+      return null;
     }
 
     @Override
     public Object visitEmptyFormalParameterSequence(EmptyFormalParameterSequence ast, Object o) {
-        return null;
+      writeToXMLFile("<Empty Formal Parameter Sequence/>\n");
+      return null;
     }
 
     @Override
     public Object visitMultipleFormalParameterSequence(MultipleFormalParameterSequence ast, Object o) {
-        return null;
+      writeToXMLFile("<Multiple Formal Parameter Sequence>\n");
+        ast.FP.visit(this, null);
+        ast.FPS.visit(this, null);
+      writeToXMLFile("</Multiple Formal Parameter Sequence>\n");
+      return null;
     }
 
     @Override
     public Object visitSingleFormalParameterSequence(SingleFormalParameterSequence ast, Object o) {
-        return null;
+      writeToXMLFile("<Single Formal Parameter Sequence>\n");
+        ast.FP.visit(this, null);
+      writeToXMLFile("</Single Formal Parameter Sequence>\n");
+      return null;
     }
 
     @Override
     public Object visitConstActualParameter(ConstActualParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Constant Actual Parameter>\n");
+        ast.E.visit(this, null);
+      writeToXMLFile("</Constant Actual Parameter>\n");
+      return null;
     }
 
     @Override
     public Object visitFuncActualParameter(FuncActualParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Func Actual Parameter>\n");
+        ast.I.visit(this, null);
+      writeToXMLFile("</Func Actual Parameter>\n");
+      return null;
     }
 
     @Override
     public Object visitProcActualParameter(ProcActualParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Proc Actual Parameter>\n");
+        ast.I.visit(this, null);
+      writeToXMLFile("</Proc Actual Parameter>\n");
+      return null;
     }
 
     @Override
     public Object visitVarActualParameter(VarActualParameter ast, Object o) {
-        return null;
+      writeToXMLFile("<Var Actual Parameter>\n");
+        ast.V.visit(this, null);
+      writeToXMLFile("</Var Actual Parameter>\n");
+      return null;
     }
 
     @Override
     public Object visitEmptyActualParameterSequence(EmptyActualParameterSequence ast, Object o) {
-        return null;
+      writeToXMLFile("<Empty Actual Parameter Sequence/>\n");
+      return null;
     }
 
     @Override
     public Object visitMultipleActualParameterSequence(MultipleActualParameterSequence ast, Object o) {
-        return null;
+      writeToXMLFile("<Multiple Actual Parameter Sequence>\n");
+        ast.AP.visit(this, null);
+        ast.APS.visit(this, null);
+      writeToXMLFile("</Multiple Actual Parameter Sequence>\n");
+      return null;
     }
 
     @Override
     public Object visitSingleActualParameterSequence(SingleActualParameterSequence ast, Object o) {
-        return null;
+      writeToXMLFile("<Single Actual Parameter Sequence>\n");
+        ast.AP.visit(this, null);
+      writeToXMLFile("</Single Actual Parameter Sequence>\n");
+      return null;
     }
 
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" Type Denoters ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // TYPE-DENOTERS
@@ -293,72 +489,114 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitAnyTypeDenoter(AnyTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Any Type Denoter/>\n");
+      return null;
     }
 
     @Override
     public Object visitArrayTypeDenoter(ArrayTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Array Type Denoter>\n");
+        ast.IL.visit(this, null);
+        ast.T.visit(this, null);
+      writeToXMLFile("</Array Type Denoter>\n");
+      return null;
     }
 
     @Override
     public Object visitBoolTypeDenoter(BoolTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Bool Type Denoter/>\n");
+      return null;
     }
 
     @Override
     public Object visitCharTypeDenoter(CharTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Char Type Denoter/>\n");
+      return null;
     }
 
     @Override
     public Object visitErrorTypeDenoter(ErrorTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Error Type Denoter/>\n");
+      return null;
     }
 
     @Override
     public Object visitSimpleTypeDenoter(SimpleTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Simple Type Denoter>\n");
+        ast.I.visit(this, null);
+      writeToXMLFile("</Simple Type Denoter/>\n");
+      return null;
     }
 
     @Override
     public Object visitIntTypeDenoter(IntTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Int Type Denoter/>\n");
+      return null;
     }
 
     @Override
     public Object visitRecordTypeDenoter(RecordTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Record Type Denoter>\n");
+        ast.FT.visit(this, null);
+      writeToXMLFile("</Record Type Denoter>\n");
+      return null;
     }
 
     @Override
     public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Multiple Field Type Denoter>\n");
+        ast.I.visit(this, null);
+        ast.T.visit(this, null);
+        ast.FT.visit(this, null);
+      writeToXMLFile("</Multiple Field Type Denoter>\n");
+      return null;
     }
 
     @Override
     public Object visitSingleFieldTypeDenoter(SingleFieldTypeDenoter ast, Object o) {
-        return null;
+      writeToXMLFile("<Single Field Type Denoter>\n");
+        ast.I.visit(this, null);
+        ast.T.visit(this, null);
+      writeToXMLFile("</Single Field Type Denoter>\n");
+      return null;
     }
 
-
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" Literals, Identifiers and Operators ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // LITERALS
     //
     ///////////////////////////////////////////////////////////////////////////////
-
+    
     @Override
     public Object visitCharacterLiteral(CharacterLiteral ast, Object o) {
-        return null;
+      writeToXMLFile("<Charater Literal>".concat(ast.spelling).concat("</Charater Literal>\n"));
+      return null;
     }
 
     @Override
+    public Object visitIdentifier(Identifier ast, Object o) {
+      writeToXMLFile("<Identifier>".concat(ast.spelling).concat("</Identifier>\n"));
+      return null;
+    }
+    
+    @Override
     public Object visitIntegerLiteral(IntegerLiteral ast, Object o) {
-        return null;
+      writeToXMLFile("<Integer Literal>".concat(ast.spelling).concat("</Integer Literal>\n"));
+      return null;
     }
 
-
+    @Override
+    public Object visitOperator(Operator ast, Object o) {
+      writeToXMLFile("<Operator>".concat(ast.spelling).concat("</Operator>\n"));
+      return null;
+    }
+    
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" Values or Variables Names ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // VALUE-OR-VARIABLE NAMES
@@ -367,20 +605,33 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitDotVname(DotVname ast, Object o) {
-        return null;
+      writeToXMLFile("<Dot Vname>\n");
+        ast.I.visit(this, null);
+        ast.V.visit(this, null);
+      writeToXMLFile("</Dot Vname>\n");
+      return null;
     }
 
     @Override
     public Object visitSimpleVname(SimpleVname ast, Object o) {
-        return null;
+      writeToXMLFile("<Simple Vname>\n");
+        ast.I.visit(this, null);
+      writeToXMLFile("</Simple Vname>\n");
+      return null;
     }
 
     @Override
     public Object visitSubscriptVname(SubscriptVname ast, Object o) {
-        return null;
+      writeToXMLFile("<Subscript Vname>\n");
+        ast.V.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</Subscript Vname>\n");
+      return null;
     }
 
-
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc=" Programs ">
     ///////////////////////////////////////////////////////////////////////////////
     //
     // PROGRAMS
@@ -389,24 +640,13 @@ public class XMLWriterVisitor implements Visitor {
 
     @Override
     public Object visitProgram(Program ast, Object o) {
-        return null;
+      writeToXMLFile("<Program>\n");
+        ast.C.visit(this, null);
+      writeToXMLFile("</Program>\n");
+      return null;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-    //
-    // OTHER
-    //
-    ///////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public Object visitIdentifier(Identifier ast, Object o) {
-        return null;
-    }
-
-    @Override
-    public Object visitOperator(Operator ast, Object o) {
-        return null;
-    }
+    // </editor-fold>
 
     private void writeToXMLFile(String content){
         try {
