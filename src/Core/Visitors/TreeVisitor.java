@@ -153,6 +153,16 @@ public class TreeVisitor implements Visitor {
         return(createBinary("Variable Declaration Initialized", ast.I, ast.E));
     }
 
+    @Override
+    public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc=" Aggregates ">

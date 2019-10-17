@@ -150,6 +150,16 @@ public class LayoutVisitor implements Visitor {
     return layoutBinary("Initialized.V.Decl.", ast.I, ast.E);
   }
 
+  @Override
+  public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+    return layoutUnary("Recursive.Decl", ast.procFuncAST);
+  }
+
+  @Override
+  public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
+    return layoutBinary("Local.Decl", ast.dAST1, ast.dAST2);
+  }
+
   // Array Aggregates
   public Object visitMultipleArrayAggregate(MultipleArrayAggregate ast, Object obj) {
     return layoutBinary("Mult.ArrayAgg.", ast.E, ast.AA);
