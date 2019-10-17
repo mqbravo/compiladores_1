@@ -69,4 +69,5 @@ public class HTMLWriter {
         }
     }
 
+    //@TODO: Hacer una funcion que pueda imprimir un char al HTML
 }

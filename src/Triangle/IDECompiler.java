@@ -47,9 +47,12 @@ public class IDECompiler {
         System.out.println("********** " +
                            "Triangle Compiler (IDE-Triangle 1.0)" +
                            " **********");
-        
-        System.out.println("Syntactic Analysis ...");
+        System.out.println("Lexical Analysis ...");
         SourceFile source = new SourceFile(sourceName);
+        Scanner HTMLscanner = new Scanner(source);
+        HTMLscanner.htmlRun(new HTMLWriter());
+        System.out.println("Syntactic Analysis ...");
+        source = new SourceFile(sourceName);
         Scanner scanner = new Scanner(source);
         report = new IDEReporter();
         Parser parser = new Parser(scanner, report);
@@ -58,7 +61,7 @@ public class IDECompiler {
         rootAST = parser.parseProgram();
         if (report.numErrors == 0) {
 
-            writeProgram(rootAST);
+            writeXMLProgram(rootAST);
 
             //System.out.println("Contextual Analysis ...");
             //Checker checker = new Checker(report);
@@ -100,12 +103,10 @@ public class IDECompiler {
     }
     // </editor-fold>
 
-    private void writeProgram(Program programAST){
-        HTMLWriter htmlWriter = new HTMLWriter(programAST);
+    private void writeXMLProgram(Program programAST){
         XMLWriter xmlWriter = new XMLWriter(programAST);
 
         //Write the output files
-        htmlWriter.writeSourceProgram();
         xmlWriter.writeProgramAST();
     }
 

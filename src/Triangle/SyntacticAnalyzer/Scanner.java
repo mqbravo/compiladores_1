@@ -15,10 +15,14 @@
 package Triangle.SyntacticAnalyzer;
 
 
+import Triangle.ProgramWriter.HTMLWriter;
+
 public final class Scanner {
 
   private SourceFile sourceFile;
   private boolean debug;
+  private boolean writingHTML;
+  private HTMLWriter htmlWriter;
 
   private char currentChar;
   private StringBuffer currentSpelling;
@@ -48,10 +52,20 @@ public final class Scanner {
     sourceFile = source;
     currentChar = sourceFile.getSource();
     debug = false;
+    writingHTML = false;
   }
 
   public void enableDebugging() {
     debug = true;
+  }
+  public void htmlRun(HTMLWriter htmlWriter) {
+    this.writingHTML = true;
+    this.htmlWriter = htmlWriter;
+    Token token;
+    do {
+      token = this.scan();
+    }while(token.kind != Token.EOT);
+    htmlWriter.finishHTML();
   }
 
   // takeIt appends the current character to the current token, and gets
@@ -70,14 +84,21 @@ public final class Scanner {
     case '!':
       {
         takeIt();
-        while ((currentChar != SourceFile.EOL) && (currentChar != SourceFile.EOT))
+        String comment = "!";
+        while ((currentChar != SourceFile.EOL) && (currentChar != SourceFile.EOT)) {
+          comment = comment + currentChar;
           takeIt();
-        if (currentChar == SourceFile.EOL)
+        }
+        if (currentChar == SourceFile.EOL) {
+          comment = comment + currentChar;
           takeIt();
+        }
+        this.htmlWriter.writeComment(comment);
       }
       break;
 
     case ' ': case '\n': case '\r': case '\t':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       break;
     }
@@ -106,73 +127,95 @@ public final class Scanner {
 
     case '0':  case '1':  case '2':  case '3':  case '4':
     case '5':  case '6':  case '7':  case '8':  case '9':
+      String intLiteral = String.valueOf(currentChar);
       takeIt();
-      while (isDigit(currentChar))
+      while (isDigit(currentChar)) {
+        intLiteral = intLiteral + currentChar;
         takeIt();
+      }
+      htmlWriter.writeLiteral(intLiteral);
       return Token.INTLITERAL;
 
     case '+':  case '-':  case '*': case '/':  case '=':
     case '<':  case '>':  case '\\':  case '&':  case '@':
     case '%':  case '^':  case '?':
+      String operator = String.valueOf(currentChar);
       takeIt();
-      while (isOperator(currentChar))
+      while (isOperator(currentChar)) {
+        operator = operator + currentChar;
         takeIt();
+      }
+      htmlWriter.writeElse(operator);
       return Token.OPERATOR;
 
     case '\'':
       takeIt();
+      String characterLiteral = String.valueOf(currentChar);
       takeIt(); // the quoted character
       if (currentChar == '\'') {
       	takeIt();
+      	htmlWriter.writeLiteral("\'"+characterLiteral+"\'");
         return Token.CHARLITERAL;
       } else
         return Token.ERROR;
 
     case '.':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.DOT;
 
     case ':':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       if (currentChar == '=') {
+        htmlWriter.writeElse(String.valueOf(currentChar));
         takeIt();
         return Token.BECOMES;
       } else
         return Token.COLON;
 
     case ';':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.SEMICOLON;
 
     case ',':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.COMMA;
 
     case '~':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.IS;
 
     case '(':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.LPAREN;
 
     case ')':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.RPAREN;
 
     case '[':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.LBRACKET;
 
     case ']':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.RBRACKET;
 
     case '{':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.LCURLY;
 
     case '}':
+      htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.RCURLY;
 
