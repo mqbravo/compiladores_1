@@ -3,6 +3,7 @@ package Triangle.ProgramWriter;
 import Triangle.AbstractSyntaxTrees.*;
 
 import java.io.FileWriter;
+import java.io.IOException;
 
 public class HTMLWriterVisitor implements Visitor {
 
@@ -404,5 +405,15 @@ public class HTMLWriterVisitor implements Visitor {
     @Override
     public Object visitOperator(Operator ast, Object o) {
         return null;
+    }
+
+
+    private void writeToHTMLFile(String content){
+        try {
+            fileWriter.write(content);
+            fileWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

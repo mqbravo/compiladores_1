@@ -126,4 +126,7 @@ fabric.properties
 .idea/**/markdown-navigator.xml
 .idea/**/markdown-navigator/
 
+#Resources
+output/
+
 # End of https://www.gitignore.io/api/java,netbeans,intellij

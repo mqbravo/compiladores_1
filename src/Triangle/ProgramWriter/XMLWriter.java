@@ -18,8 +18,7 @@ public class XMLWriter{
 
         //Create the output dir in case of needed
         File dir = new File("output/");
-        if(!dir.mkdirs())
-            return;
+        dir.mkdirs();
 
         //The XML file to write into
         File xmlFile = new File(dir, "program_ast.xml");

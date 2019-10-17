@@ -3,6 +3,7 @@ package Triangle.ProgramWriter;
 import Triangle.AbstractSyntaxTrees.*;
 
 import java.io.FileWriter;
+import java.io.IOException;
 
 public class XMLWriterVisitor implements Visitor {
 
@@ -405,5 +406,14 @@ public class XMLWriterVisitor implements Visitor {
     @Override
     public Object visitOperator(Operator ast, Object o) {
         return null;
+    }
+
+    private void writeToXMLFile(String content){
+        try {
+            fileWriter.write(content);
+            fileWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

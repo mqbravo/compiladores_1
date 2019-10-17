@@ -18,8 +18,7 @@ public class HTMLWriter {
 
         //Create the output dir in case of needed
         File dir = new File("output/");
-        if(!dir.mkdirs())
-            return;
+        dir.mkdirs();
 
         //The HTML file to write into
         File htmlFile = new File(dir, "source_program.html");

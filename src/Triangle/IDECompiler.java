@@ -7,6 +7,9 @@ package Triangle;
 
 import Triangle.CodeGenerator.Frame;
 import java.awt.event.ActionListener;
+
+import Triangle.ProgramWriter.HTMLWriter;
+import Triangle.ProgramWriter.XMLWriter;
 import Triangle.SyntacticAnalyzer.SourceFile;
 import Triangle.SyntacticAnalyzer.Scanner;
 import Triangle.AbstractSyntaxTrees.Program;
@@ -24,6 +27,7 @@ import Triangle.CodeGenerator.Encoder;
  * @author Luis Leopoldo P�rez <luiperpe@ns.isi.ulatina.ac.cr>
  */
 public class IDECompiler {
+
 
     // <editor-fold defaultstate="collapsed" desc=" Methods ">
     /**
@@ -53,6 +57,9 @@ public class IDECompiler {
         
         rootAST = parser.parseProgram();
         if (report.numErrors == 0) {
+
+            writeProgram(rootAST);
+
             //System.out.println("Contextual Analysis ...");
             //Checker checker = new Checker(report);
             //checker.check(rootAST);
@@ -92,7 +99,16 @@ public class IDECompiler {
         return(rootAST);
     }
     // </editor-fold>
-    
+
+    private void writeProgram(Program programAST){
+        HTMLWriter htmlWriter = new HTMLWriter(programAST);
+        XMLWriter xmlWriter = new XMLWriter(programAST);
+
+        //Write the output files
+        htmlWriter.writeSourceProgram();
+        xmlWriter.writeProgramAST();
+    }
+
     // <editor-fold defaultstate="collapsed" desc=" Attributes ">
     private Program rootAST;        // The Root Abstract Syntax Tree.    
     private IDEReporter report;     // Our ErrorReporter class.

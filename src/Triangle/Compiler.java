@@ -41,8 +41,7 @@ public class Compiler {
     private static Encoder encoder;
     private static ErrorReporter reporter;
     private static Drawer drawer;
-    private static HTMLWriter htmlWriter;
-    private static XMLWriter xmlWriter;
+
 
     /** The AST representing the source program. */
     private static Program theAST;
@@ -90,13 +89,6 @@ public class Compiler {
             //if (showingAST) {
             //    drawer.draw(theAST);
             //}
-
-            htmlWriter = new HTMLWriter(theAST);
-            xmlWriter = new XMLWriter(theAST);
-
-            //Write the output files
-            htmlWriter.writeSourceProgram();
-            xmlWriter.writeProgramAST();
 
             System.out.println ("Contextual Analysis ...");
             checker.check(theAST);				// 2nd pass
