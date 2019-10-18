@@ -9,13 +9,14 @@ public class HTMLWriter {
 
     private FileWriter fileWriter;
 
-    public HTMLWriter() {
+    public HTMLWriter(String sourceName) {
         //Create the output dir in case of needed
         File dir = new File("output/");
         dir.mkdirs();
 
         //The HTML file to write into
-        File htmlFile = new File(dir, "source_program.html");
+        //File htmlFile = new File(dir, "source_program.html");
+        File htmlFile = new File(dir, sourceName.concat(".html"));
 
         //Helper file writer class
         try{
@@ -27,7 +28,7 @@ public class HTMLWriter {
             writeToHTMLFile("<html>");
             writeToHTMLFile("\n");
 
-            writeToHTMLFile("<p>");
+            writeToHTMLFile("<p style=\"font-family: monospace; font-size:160%;\">");
 
         } catch (IOException e) {
             e.printStackTrace();

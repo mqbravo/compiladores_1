@@ -14,14 +14,15 @@ public class XMLWriter{
         this.programAST = programAST;
     }
 
-    public void writeProgramAST() {
+    public void writeProgramAST(String sourceName) {
 
         //Create the output dir in case of needed
         File dir = new File("output/");
         dir.mkdirs();
 
         //The XML file to write into
-        File xmlFile = new File(dir, "program_ast.xml");
+        //File htmlFile = new File(dir, "source_program.html");
+        File xmlFile = new File(dir, sourceName.concat(".xml"));
 
         //Helper file writer class
         try (FileWriter fileWriter = new FileWriter(xmlFile)) {
