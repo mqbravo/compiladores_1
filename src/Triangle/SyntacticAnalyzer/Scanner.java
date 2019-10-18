@@ -95,18 +95,21 @@ public final class Scanner {
         if (currentChar == SourceFile.EOL) {
           takeIt();
         }
-        this.htmlWriter.writeComment(comment);
+        if(writingHTML)
+          this.htmlWriter.writeComment(comment);
       }
       break;
     case '\n':
-      htmlWriter.writeElse("<br>\n");
+      if(writingHTML)
+        htmlWriter.writeElse("<br>\n");
       takeIt();
       break;
     case '\r':
       takeIt();
       break;
     case ' ': case '\t':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       break;
     }
@@ -141,7 +144,8 @@ public final class Scanner {
         intLiteral = intLiteral + currentChar;
         takeIt();
       }
-      htmlWriter.writeLiteral(intLiteral);
+      if(writingHTML)
+        htmlWriter.writeLiteral(intLiteral);
       return Token.INTLITERAL;
 
     case '+':  case '-':  case '*': case '/':  case '=':
@@ -153,7 +157,8 @@ public final class Scanner {
         operator = operator + currentChar;
         takeIt();
       }
-      htmlWriter.writeElse(operator);
+      if(writingHTML)
+        htmlWriter.writeElse(operator);
       return Token.OPERATOR;
 
     case '\'':
@@ -162,68 +167,81 @@ public final class Scanner {
       takeIt(); // the quoted character
       if (currentChar == '\'') {
       	takeIt();
-      	htmlWriter.writeLiteral("\'"+characterLiteral+"\'");
+      	if(writingHTML)
+          htmlWriter.writeLiteral("\'"+characterLiteral+"\'");
         return Token.CHARLITERAL;
       } else
         return Token.ERROR;
 
     case '.':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.DOT;
 
     case ':':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       if (currentChar == '=') {
-        htmlWriter.writeElse(String.valueOf(currentChar));
+        if(writingHTML)
+          htmlWriter.writeElse(String.valueOf(currentChar));
         takeIt();
         return Token.BECOMES;
       } else
         return Token.COLON;
 
     case ';':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.SEMICOLON;
 
     case ',':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.COMMA;
 
     case '~':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.IS;
 
     case '(':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.LPAREN;
 
     case ')':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.RPAREN;
 
     case '[':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.LBRACKET;
 
     case ']':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.RBRACKET;
 
     case '{':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.LCURLY;
 
     case '}':
-      htmlWriter.writeElse(String.valueOf(currentChar));
+      if(writingHTML)
+        htmlWriter.writeElse(String.valueOf(currentChar));
       takeIt();
       return Token.RCURLY;
 
@@ -259,9 +277,9 @@ public final class Scanner {
     pos.finish = sourceFile.getCurrentLine();
     boolean wasIdentifier = (kind == Token.IDENTIFIER);
     tok = new Token(kind, currentSpelling.toString(), pos);
-    if(wasIdentifier && tok.kind != Token.IDENTIFIER)
+    if(writingHTML && wasIdentifier && tok.kind != Token.IDENTIFIER)
       this.htmlWriter.writeKeyWord(tok.spelling);
-    else if (wasIdentifier){
+    else if (writingHTML && wasIdentifier){
       this.htmlWriter.writeElse(tok.spelling);
     }
     if (debug)
