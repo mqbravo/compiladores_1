@@ -308,6 +308,32 @@ public class XMLWriterVisitor implements Visitor {
       writeToXMLFile("</VariableDeclaration>\n");
       return null;
     }
+    
+    @Override
+    public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
+      writeToXMLFile("<VarDeclarationInitialized>\n");
+        ast.I.visit(this, null);
+        ast.E.visit(this, null);
+      writeToXMLFile("</VarDeclarationInitialized>\n");
+      return null;
+    }
+
+    @Override
+    public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+      writeToXMLFile("<RecursiveDeclaration>\n");
+        ast.procFuncAST.visit(this, null);
+      writeToXMLFile("</RecursiveDeclaration>\n");
+      return null;
+    }
+
+    @Override
+    public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
+      writeToXMLFile("<LocalDeclaration>\n");
+        ast.dAST1.visit(this, null);
+        ast.dAST2.visit(this, null);
+      writeToXMLFile("</LocalDeclaration>\n");
+      return null;
+    }
 
     // </editor-fold>
     

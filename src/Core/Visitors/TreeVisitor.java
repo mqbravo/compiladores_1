@@ -182,7 +182,7 @@ public class TreeVisitor implements Visitor {
         return(createBinary("Variable Declaration", ast.I, ast.T));
     }
 
-    //Added
+    @Override
     public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object obj) {
         return(createBinary("Variable Declaration Initialized", ast.I, ast.E));
     }
