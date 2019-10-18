@@ -17,6 +17,8 @@ package Triangle;
 import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.CodeGenerator.Encoder;
 import Triangle.ContextualAnalyzer.Checker;
+import Triangle.ProgramWriter.HTMLWriter;
+import Triangle.ProgramWriter.XMLWriter;
 import Triangle.SyntacticAnalyzer.Parser;
 import Triangle.SyntacticAnalyzer.Scanner;
 import Triangle.SyntacticAnalyzer.SourceFile;
@@ -39,6 +41,7 @@ public class Compiler {
     private static Encoder encoder;
     private static ErrorReporter reporter;
     private static Drawer drawer;
+
 
     /** The AST representing the source program. */
     private static Program theAST;
@@ -86,6 +89,7 @@ public class Compiler {
             //if (showingAST) {
             //    drawer.draw(theAST);
             //}
+
             System.out.println ("Contextual Analysis ...");
             checker.check(theAST);				// 2nd pass
             if (showingAST) {

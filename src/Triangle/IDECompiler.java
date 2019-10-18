@@ -7,6 +7,9 @@ package Triangle;
 
 import Triangle.CodeGenerator.Frame;
 import java.awt.event.ActionListener;
+
+import Triangle.ProgramWriter.HTMLWriter;
+import Triangle.ProgramWriter.XMLWriter;
 import Triangle.SyntacticAnalyzer.SourceFile;
 import Triangle.SyntacticAnalyzer.Scanner;
 import Triangle.AbstractSyntaxTrees.Program;
@@ -24,6 +27,7 @@ import Triangle.CodeGenerator.Encoder;
  * @author Luis Leopoldo P�rez <luiperpe@ns.isi.ulatina.ac.cr>
  */
 public class IDECompiler {
+
 
     // <editor-fold defaultstate="collapsed" desc=" Methods ">
     /**
@@ -43,9 +47,12 @@ public class IDECompiler {
         System.out.println("********** " +
                            "Triangle Compiler (IDE-Triangle 1.0)" +
                            " **********");
-        
-        System.out.println("Syntactic Analysis ...");
+        System.out.println("Lexical Analysis ...");
         SourceFile source = new SourceFile(sourceName);
+        Scanner HTMLscanner = new Scanner(source);
+        HTMLscanner.htmlRun(new HTMLWriter(sourceName.substring(sourceName.lastIndexOf('\\')).replace(".tri", "")));
+        System.out.println("Syntactic Analysis ...");
+        source = new SourceFile(sourceName);
         Scanner scanner = new Scanner(source);
         report = new IDEReporter();
         Parser parser = new Parser(scanner, report);
@@ -53,6 +60,9 @@ public class IDECompiler {
         
         rootAST = parser.parseProgram();
         if (report.numErrors == 0) {
+
+            writeXMLProgram(rootAST, sourceName.substring(sourceName.lastIndexOf('\\')).replace(".tri", ""));
+
             //System.out.println("Contextual Analysis ...");
             //Checker checker = new Checker(report);
             //checker.check(rootAST);
@@ -92,7 +102,14 @@ public class IDECompiler {
         return(rootAST);
     }
     // </editor-fold>
-    
+
+    private void writeXMLProgram(Program programAST, String sourceName){
+        XMLWriter xmlWriter = new XMLWriter(programAST);
+
+        //Write the output files
+        xmlWriter.writeProgramAST(sourceName);
+    }
+
     // <editor-fold defaultstate="collapsed" desc=" Attributes ">
     private Program rootAST;        // The Root Abstract Syntax Tree.    
     private IDEReporter report;     // Our ErrorReporter class.
