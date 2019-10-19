@@ -16,6 +16,7 @@ import Triangle.AbstractSyntaxTrees.Program;
 import Triangle.SyntacticAnalyzer.Parser;
 import Triangle.ContextualAnalyzer.Checker;
 import Triangle.CodeGenerator.Encoder;
+import java.io.File;
 
 
 
@@ -50,7 +51,7 @@ public class IDECompiler {
         System.out.println("Lexical Analysis ...");
         SourceFile source = new SourceFile(sourceName);
         Scanner HTMLscanner = new Scanner(source);
-        HTMLscanner.htmlRun(new HTMLWriter(sourceName.substring(sourceName.lastIndexOf('\\')).replace(".tri", "")));
+        HTMLscanner.htmlRun(new HTMLWriter(sourceName.substring(sourceName.lastIndexOf(File.separatorChar)).replace(".tri", "")));
         System.out.println("Syntactic Analysis ...");
         source = new SourceFile(sourceName);
         Scanner scanner = new Scanner(source);
@@ -61,7 +62,7 @@ public class IDECompiler {
         rootAST = parser.parseProgram();
         if (report.numErrors == 0) {
 
-            writeXMLProgram(rootAST, sourceName.substring(sourceName.lastIndexOf('\\')).replace(".tri", ""));
+            writeXMLProgram(rootAST, sourceName.substring(sourceName.lastIndexOf(File.separatorChar)).replace(".tri", ""));
 
             //System.out.println("Contextual Analysis ...");
             //Checker checker = new Checker(report);
