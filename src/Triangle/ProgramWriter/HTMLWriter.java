@@ -1,6 +1,8 @@
 package Triangle.ProgramWriter;
 
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -72,8 +74,9 @@ public class HTMLWriter {
     }
 
     private String getRunningDir(){
-        String runningDirFile = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        return runningDirFile.substring(0,runningDirFile.lastIndexOf(File.separator)) + File.separator;
+        File file = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        return file.getAbsolutePath();
+
     }
 
     //@TODO: Hacer una funcion que pueda imprimir un char al HTML
