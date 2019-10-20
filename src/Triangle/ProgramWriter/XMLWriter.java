@@ -17,7 +17,7 @@ public class XMLWriter{
     public void writeProgramAST(String sourceName) {
 
         //Create the output dir in case of needed
-        File dir = new File(getRunningDir() + "output" +File.separator);
+        File dir = new File("output" + File.separator);
         dir.mkdirs();
 
         //The XML file to write into
@@ -35,10 +35,4 @@ public class XMLWriter{
         }
 
     }
-
-    private String getRunningDir(){
-        String runningDirFile = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        return runningDirFile.substring(0,runningDirFile.lastIndexOf(File.separator)) + File.separator;
-    }
-
 }
