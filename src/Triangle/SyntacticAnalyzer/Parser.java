@@ -652,6 +652,8 @@ public class Parser {
 // DECLARATIONS
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+  //New rule created for Compound-Declaration.
   Declaration parseCompoundDeclaration() throws SyntaxError{
     Declaration declarationAST = null;
 
@@ -689,6 +691,7 @@ public class Parser {
     return declarationAST;
   }
 
+  //This method was modified to work with the new rule named parseCompoundDeclaration, and with a recursive call.
   Declaration parseDeclaration() throws SyntaxError {
     Declaration declarationAST = null; // in case there's a syntactic error
 
