@@ -17,7 +17,7 @@ public class XMLWriter{
     public void writeProgramAST(String sourceName) {
 
         //Create the output dir in case of needed
-        File dir = new File("output/");
+        File dir = new File("output" + File.separator);
         dir.mkdirs();
 
         //The XML file to write into
@@ -33,7 +33,5 @@ public class XMLWriter{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }

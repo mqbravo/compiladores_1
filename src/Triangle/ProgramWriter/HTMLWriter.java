@@ -11,7 +11,7 @@ public class HTMLWriter {
 
     public HTMLWriter(String sourceName) {
         //Create the output dir in case of needed
-        File dir = new File("output/");
+        File dir = new File("output" + File.separator);
         dir.mkdirs();
 
         //The HTML file to write into
@@ -20,6 +20,7 @@ public class HTMLWriter {
 
         //Helper file writer class
         try{
+
             //The HTML visitor writes to file with the fileWriter
             fileWriter = new FileWriter(htmlFile);
 
@@ -69,6 +70,4 @@ public class HTMLWriter {
             e.printStackTrace();
         }
     }
-
-    //@TODO: Hacer una funcion que pueda imprimir un char al HTML
 }
