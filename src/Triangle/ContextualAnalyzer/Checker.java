@@ -78,49 +78,64 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /*
-  @Override
-  public Object visitLoopCommand(LoopCommand ast, Object o) {
-    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-    if (! eType.equals(StdEnvironment.booleanType))
-      reporter.reportError("Boolean expression expected here", "", ast.E.position);
-    ast.C.visit(this, null);
-    return null;
-  }
-  */
   
   //@TODO: Implement
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-    if (! eType.equals(StdEnvironment.booleanType))
-      reporter.reportError("Boolean expression expected here", "", ast.E.position);
-    ast.C.visit(this, null);
+
     return null;
   }
   
   //@TODO: Implement
   @Override
   public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
+
+      if (!eType.equals(StdEnvironment.booleanType))
+        reporter.reportError("Boolean expression expected here", "", ast.E.position);
+
+      ast.C.visit(this, null);
+
+      return null;
   }
 
   //@TODO: Implement
   @Override
   public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
+
+    if (!eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+
+    ast.C.visit(this, null);
+
+    return null;
   }
 
   //@TODO: Implement
   @Override
   public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
+
+    if (!eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+
+    ast.C.visit(this, null);
+
+    return null;
   }
 
   //@TODO: Implement
   @Override
   public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
+
+    if (!eType.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E.position);
+
+    ast.C.visit(this, null);
+
+    return null;
   }
 
   // Expressions
