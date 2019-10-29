@@ -77,16 +77,20 @@ public final class Checker implements Visitor {
     ast.C2.visit(this, null);
     return null;
   }
-
   
-  //@TODO: Implement
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-
+    TypeDenoter idenExpressionType = (TypeDenoter) ast.IdenExpression.visit(this, null);
+    TypeDenoter haltExpressionType = (TypeDenoter) ast.E.visit(this, null);
+    if (!idenExpressionType.equals(StdEnvironment.integerType) || !haltExpressionType.equals(StdEnvironment.integerType))
+      reporter.reportError("Integer expression expected here", "", ast.E.position);
+    idTable.openScope();
+      idTable.enter(ast.Identifier.spelling, new ConstDeclaration(ast.Identifier, ast.IdenExpression, ast.position));
+      ast.C.visit(this, null);
+    idTable.closeScope();
     return null;
   }
   
-  //@TODO: Implement
   @Override
   public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
       TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
@@ -99,7 +103,6 @@ public final class Checker implements Visitor {
       return null;
   }
 
-  //@TODO: Implement
   @Override
   public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
@@ -112,7 +115,6 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  //@TODO: Implement
   @Override
   public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
@@ -125,7 +127,6 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  //@TODO: Implement
   @Override
   public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
