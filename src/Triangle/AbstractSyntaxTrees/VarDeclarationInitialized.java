@@ -7,19 +7,17 @@ package Triangle.AbstractSyntaxTrees;
 
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
-public class VarDeclarationInitialized extends Declaration {
+public class VarDeclarationInitialized extends VarDeclaration {
 
     public VarDeclarationInitialized (Identifier iAST, Expression eAST,
                                       SourcePosition thePosition) {
-        super (thePosition);
-        I = iAST;
+        super (iAST, null, thePosition);
         E = eAST;
     }
 
+    @Override
     public Object visit(Visitor v, Object o) {
         return v.visitVarDeclarationInitialized(this, o);
     }
-
-    public Identifier I;
     public Expression E;
 }

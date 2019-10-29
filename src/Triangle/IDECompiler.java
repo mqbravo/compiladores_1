@@ -64,9 +64,10 @@ public class IDECompiler {
 
             writeXMLProgram(rootAST, sourceName.substring(sourceName.lastIndexOf(File.separatorChar)).replace(".tri", ""));
 
-            //System.out.println("Contextual Analysis ...");
-            //Checker checker = new Checker(report);
-            //checker.check(rootAST);
+            System.out.println("Contextual Analysis ...");
+            Checker checker = new Checker(report);
+            checker.check(rootAST);
+            
             if (report.numErrors == 0) {
                 //System.out.println("Code Generation ...");
                 //Encoder encoder = new Encoder(report);
