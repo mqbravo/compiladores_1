@@ -25,6 +25,7 @@ public final class Checker implements Visitor {
 
   // Always returns null. Does not use the given object.
 
+  @Override
   public Object visitAssignCommand(AssignCommand ast, Object o) {
     TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
@@ -35,7 +36,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-
+  @Override
   public Object visitCallCommand(CallCommand ast, Object o) {
 
     Declaration binding = (Declaration) ast.I.visit(this, null);
@@ -50,11 +51,13 @@ public final class Checker implements Visitor {
                            ast.I.spelling, ast.I.position);
     return null;
   }
-
+  
+  @Override
   public Object visitEmptyCommand(EmptyCommand ast, Object o) {
     return null;
   }
 
+  @Override
   public Object visitIfCommand(IfCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.booleanType))
@@ -64,6 +67,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
+  @Override
   public Object visitLetCommand(LetCommand ast, Object o) {
     idTable.openScope();
     ast.D.visit(this, null);
@@ -77,17 +81,6 @@ public final class Checker implements Visitor {
     ast.C2.visit(this, null);
     return null;
   }
-
-  /*
-  @Override
-  public Object visitLoopCommand(LoopCommand ast, Object o) {
-    TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-    if (! eType.equals(StdEnvironment.booleanType))
-      reporter.reportError("Boolean expression expected here", "", ast.E.position);
-    ast.C.visit(this, null);
-    return null;
-  }
-  */
   
   //@TODO: Implement
   @Override
@@ -128,6 +121,7 @@ public final class Checker implements Visitor {
   // Returns the TypeDenoter denoting the type of the expression. Does
   // not use the given object.
 
+  @Override
   public Object visitArrayExpression(ArrayExpression ast, Object o) {
     TypeDenoter elemType = (TypeDenoter) ast.AA.visit(this, null);
     IntegerLiteral il = new IntegerLiteral(new Integer(ast.AA.elemCount).toString(),
@@ -136,6 +130,7 @@ public final class Checker implements Visitor {
     return ast.type;
   }
 
+  @Override
   public Object visitBinaryExpression(BinaryExpression ast, Object o) {
 
     TypeDenoter e1Type = (TypeDenoter) ast.E1.visit(this, null);
@@ -165,6 +160,7 @@ public final class Checker implements Visitor {
     return ast.type;
   }
 
+  @Override
   public Object visitCallExpression(CallExpression ast, Object o) {
     Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null) {
@@ -182,16 +178,19 @@ public final class Checker implements Visitor {
     return ast.type;
   }
 
+  @Override
   public Object visitCharacterExpression(CharacterExpression ast, Object o) {
     ast.type = StdEnvironment.charType;
     return ast.type;
   }
 
+  @Override
   public Object visitEmptyExpression(EmptyExpression ast, Object o) {
     ast.type = null;
     return ast.type;
   }
 
+  @Override
   public Object visitIfExpression(IfExpression ast, Object o) {
     TypeDenoter e1Type = (TypeDenoter) ast.E1.visit(this, null);
     if (! e1Type.equals(StdEnvironment.booleanType))
@@ -322,9 +321,14 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  //@TODO Implement
+  @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    ast.T = (TypeDenoter) ast.E.visit(this, null);
+    idTable.enter(ast.I.spelling, ast);
+    if (ast.duplicated)
+      reporter.reportError ("identifier \"%\" already declared",
+                            ast.I.spelling, ast.position);
+    return null;
   }
 
   //@todo implement
