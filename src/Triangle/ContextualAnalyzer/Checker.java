@@ -378,10 +378,14 @@ public final class Checker implements Visitor {
     throw new UnsupportedOperationException("Not implemented yet.");
   }
 
-  //@todo implement
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    idTable.openScope();
+    ast.dAST1.visit(this, null);
+    idTable.openScope();
+    ast.dAST2.visit(this, null);
+    idTable.closeLocalScope();
+    return null;
   }
 
   // Array Aggregates
@@ -832,7 +836,7 @@ public final class Checker implements Visitor {
     establishStdEnvironment();
   }
 
-  private final IdentificationTable idTable;
+  private IdentificationTable idTable;
   private static final SourcePosition dummyPos = new SourcePosition();
   private final ErrorReporter reporter;
 

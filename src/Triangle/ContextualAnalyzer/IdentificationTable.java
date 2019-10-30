@@ -43,10 +43,10 @@ public final class IdentificationTable {
 
     // Presumably, idTable.level > 0.
     entry = this.latest;
-    while (entry.level == this.level) {
+    do {
       local = entry;
       entry = local.previous;
-    }
+    } while (entry.level == this.level);
     this.level--;
     this.latest = entry;
   }
@@ -105,4 +105,33 @@ public final class IdentificationTable {
     return attr;
   }
 
+  /**
+   * This method is used to collapse the current scope on the previous scope
+   * Is only used in LocalVarDeclaration
+   */
+  public void closeLocalScope(){
+    
+     IdEntry entry, local, localEntry;
+
+    // Presumably, idTable.level > 0.
+    // First, I need to point local towards the first declaration in this scope
+    entry = this.latest;
+    do {
+      local = entry;
+      local.level = local.level-2;
+      entry = local.previous;
+    } while (entry.level == this.level);
+    
+    //Now, I need to skip all the entries belonging to the previous scope (local variables' scope)
+    do {
+      localEntry = entry;
+      entry = localEntry.previous;
+    } while (entry.level == this.level-1);
+    
+    //Now I anchor the entries I defined by using local declarations to the level they were in
+    local.previous = entry;
+    
+    //And submit the changes in the scope level
+    this.level = level-2;
+  }  
 }

@@ -275,7 +275,7 @@ public class TableVisitor implements Visitor {
   
   public Object visitVarDeclaration(VarDeclaration ast, Object o) {      
       try {
-      addIdentifier(ast.I.spelling, 
+      addIdentifier(ast.I.spelling,
               "KnownAddress", 
               (ast.entity!=null?ast.entity.size:0), 
               ((KnownAddress)ast.entity).address.level, 
@@ -296,6 +296,7 @@ public class TableVisitor implements Visitor {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    //@ TODO: IMPLEMENT
     @Override
     public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
         throw new UnsupportedOperationException("Not supported yet.");
