@@ -321,7 +321,7 @@ public class XMLWriterVisitor implements Visitor {
     @Override
     public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
       writeToXMLFile("<RecursiveDeclaration>\n");
-        ast.procFuncAST.visit(this, null);
+        ast.D.visit(this, null);
       writeToXMLFile("</RecursiveDeclaration>\n");
       return null;
     }

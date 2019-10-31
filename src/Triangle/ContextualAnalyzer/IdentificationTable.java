@@ -14,16 +14,26 @@
 
 package Triangle.ContextualAnalyzer;
 
+import Triangle.AbstractSyntaxTrees.CallCommand;
+import Triangle.AbstractSyntaxTrees.CallExpression;
 import Triangle.AbstractSyntaxTrees.Declaration;
+import Triangle.AbstractSyntaxTrees.Identifier;
+
+import java.util.ArrayList;
 
 public final class IdentificationTable {
 
   private int level;
+  private int recLevel;
   private IdEntry latest;
+  private ArrayList<CallExpression> pendingCallExp;
+  private ArrayList<CallCommand> pendingCallCmd;
 
   public IdentificationTable () {
-    level = 0;
+    level = recLevel = 0;
     latest = null;
+    pendingCallExp = new ArrayList<>();
+    pendingCallCmd = new ArrayList<>();
   }
 
   // Opens a new level in the identification table, 1 higher than the
@@ -133,5 +143,55 @@ public final class IdentificationTable {
     
     //And submit the changes in the scope level
     this.level = level-2;
-  }  
+  }
+
+  public void openRecursiveScope(){
+    recLevel++;
+  }
+
+  public void closeRecursiveScope(){
+    //TODO
+  }
+
+  public int getRecLevel(){
+    return recLevel;
+  }
+
+  public void addPendingCallExpression(CallExpression callExpression){
+    pendingCallExp.add(callExpression);
+  }
+
+
+  public void addPendingCallCommand(CallCommand callCommand){
+    pendingCallCmd.add(callCommand);
+  }
+
+  public CallExpression checkPendingCallExp(Identifier pfId){
+    CallExpression callExpression;
+
+    for(CallExpression c : pendingCallExp){
+      if (c.I.equals(pfId)) {
+        callExpression = c;
+        pendingCallExp.remove(c);
+        return callExpression;
+      }
+    }
+
+    return null;
+  }
+
+  public CallCommand checkPendingCallCmd(Identifier pfId){
+    CallCommand callCommand;
+
+    for(CallCommand c : pendingCallCmd){
+      if (c.I.equals(pfId)) {
+        callCommand = c;
+        pendingCallCmd.remove(c);
+        return callCommand;
+      }
+    }
+
+    return null;
+  }
+
 }

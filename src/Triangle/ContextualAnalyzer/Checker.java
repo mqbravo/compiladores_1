@@ -40,8 +40,14 @@ public final class Checker implements Visitor {
   public Object visitCallCommand(CallCommand ast, Object o) {
 
     Declaration binding = (Declaration) ast.I.visit(this, null);
-    if (binding == null)
-      reportUndeclared(ast.I);
+    if (binding == null) {
+      if (idTable.getRecLevel() > 0)
+        idTable.addPendingCallCommand(ast);
+
+      else
+        reportUndeclared(ast.I);
+    }
+
     else if (binding instanceof ProcDeclaration) {
       ast.APS.visit(this, ((ProcDeclaration) binding).FPS);
     } else if (binding instanceof ProcFormalParameter) {
@@ -192,8 +198,14 @@ public final class Checker implements Visitor {
   public Object visitCallExpression(CallExpression ast, Object o) {
     Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null) {
-      reportUndeclared(ast.I);
-      ast.type = StdEnvironment.errorType;
+      if(idTable.getRecLevel() > 0)
+        idTable.addPendingCallExpression(ast);
+
+      else {
+        reportUndeclared(ast.I);
+        ast.type = StdEnvironment.errorType;
+      }
+
     } else if (binding instanceof FuncDeclaration) {
       ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
       ast.type = ((FuncDeclaration) binding).T;
@@ -214,8 +226,7 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitEmptyExpression(EmptyExpression ast, Object o) {
-    ast.type = null;
-    return ast.type;
+    return null;
   }
 
   @Override
@@ -303,9 +314,21 @@ public final class Checker implements Visitor {
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
     idTable.enter (ast.I.spelling, ast); // permits recursion
-    if (ast.duplicated)
+    if (ast.duplicated) {
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
+    }
+
+    CallExpression cE = idTable.checkPendingCallExp(ast.I);
+    if( cE != null){
+      cE.visit(this, null);
+    }
+
+    CallCommand cC = idTable.checkPendingCallCmd(ast.I);
+    if( cC != null){
+      cC.visit(this, null);
+    }
+
     idTable.openScope();
     ast.FPS.visit(this, null);
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
@@ -322,6 +345,17 @@ public final class Checker implements Visitor {
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
+
+    CallExpression cE = idTable.checkPendingCallExp(ast.I);
+    if( cE != null){
+      cE.visit(this, null);
+    }
+
+    CallCommand cC = idTable.checkPendingCallCmd(ast.I);
+    if( cC != null){
+      cC.visit(this, null);
+    }
+
     idTable.openScope();
     ast.FPS.visit(this, null);
     ast.C.visit(this, null);
@@ -375,7 +409,11 @@ public final class Checker implements Visitor {
   //@todo implement
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    idTable.openRecursiveScope();
+    ast.D.visit(this, null);
+    idTable.closeRecursiveScope();
+
+    return null;
   }
 
   @Override

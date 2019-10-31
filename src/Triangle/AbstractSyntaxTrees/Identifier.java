@@ -28,6 +28,14 @@ public class Identifier extends Terminal {
     return v.visitIdentifier(this, o);
   }
 
+  @Override
+  public boolean equals(Object obj){
+    if (getClass() != obj.getClass())
+      return false;
+
+    return spelling.equals(((Identifier) obj).spelling);
+  }
+
   public TypeDenoter type;
   public AST decl; // Either a Declaration or a FieldTypeDenoter
 }

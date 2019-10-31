@@ -3,10 +3,10 @@ package Triangle.AbstractSyntaxTrees;
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
 public class RecursiveDeclaration extends Declaration{
-    public Declaration procFuncAST;
-    public RecursiveDeclaration(Declaration procFuncAST, SourcePosition thePosition) {
+    public Declaration D;
+    public RecursiveDeclaration(Declaration D, SourcePosition thePosition) {
         super (thePosition);
-        this.procFuncAST = procFuncAST;
+        this.D = D;
     }
 
     @Override
