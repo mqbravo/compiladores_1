@@ -26,8 +26,8 @@ public final class IdentificationTable {
   private int level;
   private int recLevel;
   private IdEntry latest;
-  private ArrayList<CallExpression> pendingCallExp;
-  private ArrayList<CallCommand> pendingCallCmd;
+  public ArrayList<CallExpression> pendingCallExp;
+  public ArrayList<CallCommand> pendingCallCmd;
 
   public IdentificationTable () {
     level = recLevel = 0;
@@ -150,7 +150,7 @@ public final class IdentificationTable {
   }
 
   public void closeRecursiveScope(){
-    //TODO
+    recLevel--;
   }
 
   public int getRecLevel(){
@@ -167,31 +167,32 @@ public final class IdentificationTable {
   }
 
   public CallExpression checkPendingCallExp(Identifier pfId){
-    CallExpression callExpression;
+    CallExpression callExpression = null;
 
     for(CallExpression c : pendingCallExp){
       if (c.I.equals(pfId)) {
         callExpression = c;
         pendingCallExp.remove(c);
-        return callExpression;
       }
     }
 
-    return null;
+    return callExpression;
   }
 
   public CallCommand checkPendingCallCmd(Identifier pfId){
-    CallCommand callCommand;
+    CallCommand callCommand = null;
+    ArrayList<CallCommand> toRemove = new ArrayList<>();
 
     for(CallCommand c : pendingCallCmd){
       if (c.I.equals(pfId)) {
         callCommand = c;
-        pendingCallCmd.remove(c);
-        return callCommand;
+        toRemove.add(c);
       }
     }
 
-    return null;
+    pendingCallCmd.removeAll(toRemove);
+
+    return callCommand;
   }
 
 }

@@ -57,7 +57,7 @@ public final class Checker implements Visitor {
                            ast.I.spelling, ast.I.position);
     return null;
   }
-  
+
   @Override
   public Object visitEmptyCommand(EmptyCommand ast, Object o) {
     return null;
@@ -88,7 +88,7 @@ public final class Checker implements Visitor {
     ast.C2.visit(this, null);
     return null;
   }
-  
+
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
     TypeDenoter idenExpressionType = (TypeDenoter) ast.IdenExpression.visit(this, null);
@@ -101,7 +101,7 @@ public final class Checker implements Visitor {
     idTable.closeScope();
     return null;
   }
-  
+
   @Override
   public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
       TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
@@ -412,6 +412,16 @@ public final class Checker implements Visitor {
     idTable.openRecursiveScope();
     ast.D.visit(this, null);
     idTable.closeRecursiveScope();
+
+    if(idTable.getRecLevel() == 0 && idTable.pendingCallExp.size() > 0){
+      reporter.reportError("\"%\" is not a procedure or function identifier",
+              idTable.pendingCallExp.get(0).I.spelling, idTable.pendingCallExp.get(0).I.position);
+    }
+
+    else if(idTable.getRecLevel() == 0 && idTable.pendingCallCmd.size() > 0){
+      reporter.reportError("\"%\" is not a procedure or function identifier",
+              idTable.pendingCallCmd.get(0).I.spelling, idTable.pendingCallCmd.get(0).I.position);
+    }
 
     return null;
   }
@@ -1048,3 +1058,8 @@ public final class Checker implements Visitor {
 
   }
 }
+
+
+//TODO Hacer que ademas de chequear solo por la llamada de la funcion pendiente, que se revise en el nivel que se llama.
+//TODO Revisar como funciona el id table, porque parece que las funciones declaradas en un scope se remueven.
+//TODO Revisar desde cuando esta el codigo de chequear funciones, porque parece que desde ahi es donde esta viniendo el problema de los scopes
