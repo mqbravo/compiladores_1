@@ -708,16 +708,16 @@ public class Parser {
     return declarationAST;
   }
 
-  Declaration parsePROC_FUNCS() throws SyntaxError{
+  Declaration parsePROC_FUNCS() throws SyntaxError {
     Declaration declarationAST = null; // in case there's a syntactic error
 
     SourcePosition declarationPos = new SourcePosition();
     start(declarationPos);
-    Declaration dAST1 = null;
-    switch(currentToken.kind) {
+
+    switch (currentToken.kind) {
       case Token.PROC:
       case Token.FUNC:
-        dAST1 = parsePROC_FUNC();
+        declarationAST = parsePROC_FUNC();
         finish(declarationPos);
         break;
       default:
@@ -725,21 +725,23 @@ public class Parser {
                 currentToken.spelling);
         break;
     }
-    if(currentToken.kind == Token.AND){
-       acceptIt();
-       Declaration dAST2 = parsePROC_FUNC();
-       finish(declarationPos);
-       declarationAST = new SequentialDeclaration(dAST1, dAST2, declarationPos);
-       while(currentToken.kind == Token.AND) {
-         acceptIt();
-         start(declarationPos);
-         dAST1 = parsePROC_FUNC();
-         finish(declarationPos);
-         declarationAST = new SequentialDeclaration(declarationAST, dAST1, declarationPos);
-       }
-    }else{
-      declarationAST = dAST1;
-    }
+
+    do {
+      accept(Token.AND);
+      switch(currentToken.kind){
+        case Token.PROC:
+        case Token.FUNC:
+          start(declarationPos);
+          Declaration dAST2 = parsePROC_FUNC();
+          finish(declarationPos);
+          declarationAST = new SequentialDeclaration(declarationAST, dAST2, declarationPos);
+          break;
+        default:
+          syntacticError("\"%\" does not start a proc nor func.",
+                  currentToken.spelling);
+          break;
+      }
+    } while (currentToken.kind == Token.AND);
     return declarationAST;
   }
 
