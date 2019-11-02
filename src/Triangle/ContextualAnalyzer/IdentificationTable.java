@@ -53,10 +53,10 @@ public final class IdentificationTable {
 
     // Presumably, idTable.level > 0.
     entry = this.latest;
-    do {
+    while (entry.level == this.level){
       local = entry;
       entry = local.previous;
-    } while (entry.level == this.level);
+    }
     this.level--;
     this.latest = entry;
   }
@@ -121,22 +121,22 @@ public final class IdentificationTable {
    */
   public void closeLocalScope(){
     
-     IdEntry entry, local, localEntry;
+     IdEntry entry = this.latest, local = entry, localEntry;
 
     // Presumably, idTable.level > 0.
     // First, I need to point local towards the first declaration in this scope
-    entry = this.latest;
-    do {
+    
+    while (entry.level == this.level) {
       local = entry;
       local.level = local.level-2;
       entry = local.previous;
-    } while (entry.level == this.level);
+    }
     
     //Now, I need to skip all the entries belonging to the previous scope (local variables' scope)
-    do {
+    while (entry.level == this.level-1) {
       localEntry = entry;
       entry = localEntry.previous;
-    } while (entry.level == this.level-1);
+    }
     
     //Now I anchor the entries I defined by using local declarations to the level they were in
     local.previous = entry;
