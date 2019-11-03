@@ -19,6 +19,8 @@ import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
+import java.util.ArrayList;
+
 public final class Checker implements Visitor {
 
   // Commands
@@ -1047,14 +1049,20 @@ public final class Checker implements Visitor {
   }
 
 
-  private void visitPendingCalls(Identifier ast){
-    CallExpression cE = idTable.checkPendingCallExp(ast);
-    if( cE != null)
-      cE.visit(this, null);
+  private void visitPendingCalls(Identifier I){
+    ArrayList<CallExpression> cE = idTable.checkPendingCallExp(I);
 
-    CallCommand cC = idTable.checkPendingCallCmd(ast);
-    if( cC != null)
-      cC.visit(this, null);
+    //Checking if there are pending "I" call expressions to visit
+    if(cE.size() > 0)
+      for (CallExpression c : cE)
+        c.visit(this, null); //Visit each of them
+
+    ArrayList<CallCommand> cC = idTable.checkPendingCallCmd(I);
+
+    //Checking if there are pending "I" call expressions to visit
+    if(cC.size() > 0)
+      for (CallCommand c : cC)
+        c.visit(this, null); //Visit each of them
   }
 }
 

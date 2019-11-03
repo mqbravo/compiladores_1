@@ -166,34 +166,29 @@ public final class IdentificationTable {
     pendingCallCmd.add(callCommand);
   }
 
-  public CallExpression checkPendingCallExp(Identifier pfId){
-    CallExpression callExpression = null;
+  public ArrayList<CallExpression> checkPendingCallExp(Identifier pfId){
 
-    for(CallExpression c : pendingCallExp){
-      if (c.I.equals(pfId)) {
-        callExpression = c;
-        pendingCallExp.remove(c);
-      }
-    }
+    ArrayList<CallExpression> toVisit = new ArrayList<>();
 
-    return callExpression;
+    for(CallExpression c : pendingCallExp)
+      if (c.I.equals(pfId))
+        toVisit.add(c);
+
+    pendingCallExp.removeAll(toVisit);
+
+    return toVisit;
   }
 
-  //TODO En vez de revisar así, no meterla si ya está metida
-  public CallCommand checkPendingCallCmd(Identifier pfId){
-    CallCommand callCommand = null;
-    ArrayList<CallCommand> toRemove = new ArrayList<>();
+  public ArrayList<CallCommand> checkPendingCallCmd(Identifier pfId){
+    ArrayList<CallCommand> toVisit = new ArrayList<>();
 
-    for(CallCommand c : pendingCallCmd){
-      if (c.I.equals(pfId)) {
-        callCommand = c;
-        toRemove.add(c);
-      }
-    }
+    for(CallCommand c : pendingCallCmd)
+      if (c.I.equals(pfId))
+        toVisit.add(c);
 
-    pendingCallCmd.removeAll(toRemove);
+    pendingCallCmd.removeAll(toVisit);
 
-    return callCommand;
+    return toVisit;
   }
 
 }
