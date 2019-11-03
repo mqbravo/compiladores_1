@@ -40,11 +40,17 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitCallCommand(CallCommand ast, Object o) {
+    Declaration binding;
 
-    Declaration binding = (Declaration) ast.I.visit(this, null);
+    if(o != null)
+      binding = (Declaration)o;
+
+    else
+      binding = (Declaration) ast.I.visit(this, null);
+
     if (binding == null) {
       if (idTable.getRecLevel() > 0)
-        idTable.addPendingCall(new PendingCallCommand(this.idTable, ast));
+        idTable.addPendingCall(new PendingCallCommand(new IdentificationTable(this.idTable), ast));
 
       else
         reportUndeclared(ast.I);
@@ -198,10 +204,17 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitCallExpression(CallExpression ast, Object o) {
-    Declaration binding = (Declaration) ast.I.visit(this, null);
+    Declaration binding;
+
+    if(o != null)
+      binding = (Declaration)o;
+
+    else
+      binding = (Declaration) ast.I.visit(this, null);
+
     if (binding == null) {
       if(idTable.getRecLevel() > 0)
-        idTable.addPendingCall(new PendingCallExpression(this.idTable, ast));
+        idTable.addPendingCall(new PendingCallExpression(new IdentificationTable(this.idTable), ast));
 
       else {
         reportUndeclared(ast.I);
@@ -1051,17 +1064,18 @@ public final class Checker implements Visitor {
     //Checking if there are pending "I" call expressions to visit
     if (pendingCalls.size() > 0)
       for (PendingCall pC : pendingCalls) {
-        this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
-        pC.visitPendingCall(this, null); //Visit each of them
-      }
+        Declaration procDecl = (Declaration)I.visit(this, null);
 
-    this.idTable = currentIdTable; //Sets the id table back
+        if(this.idTable != pC.getCallContextIdTable())
+          this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
+
+        pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
+
+        this.idTable = currentIdTable; //Sets the id table back
+      }
   }
 }
 
 
 //TODO Hacer que ademas de chequear solo por la llamada de la funcion pendiente, que se revise en el nivel que se llama.
 //TODO Revisar si aun es necesario el TODO de arriba
-/**TODO En los calls commands, se pueden hacer llamadas con variables locales, cuando se haga la revision de una llamada pendiente
-esta puede que ya no esté en su mismo scope, por lo que se debe guardar además del AST de la llamada, una copia de la tabla
-de identificación en el momento en que fue llamada la función, para poder sacar las variables a las que se refiere**/

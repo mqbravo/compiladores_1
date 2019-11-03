@@ -34,6 +34,12 @@ public final class IdentificationTable {
     pendingCalls = new ArrayList<>();
   }
 
+  public IdentificationTable(IdentificationTable oldIdTable){
+    this.level = oldIdTable.level;
+    this.latest = oldIdTable.latest;
+    //this.recLevel = oldIdTable.recLevel;
+    //this.pendingCalls = oldIdTable.pendingCalls;
+  }
   // Opens a new level in the identification table, 1 higher than the
   // current topmost level.
 
