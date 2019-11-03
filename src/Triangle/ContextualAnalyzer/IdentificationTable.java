@@ -179,6 +179,7 @@ public final class IdentificationTable {
     return callExpression;
   }
 
+  //TODO En vez de revisar así, no meterla si ya está metida
   public CallCommand checkPendingCallCmd(Identifier pfId){
     CallCommand callCommand = null;
     ArrayList<CallCommand> toRemove = new ArrayList<>();

@@ -319,18 +319,11 @@ public final class Checker implements Visitor {
                             ast.I.spelling, ast.position);
     }
 
-    CallExpression cE = idTable.checkPendingCallExp(ast.I);
-    if( cE != null){
-      cE.visit(this, null);
-    }
-
-    CallCommand cC = idTable.checkPendingCallCmd(ast.I);
-    if( cC != null){
-      cC.visit(this, null);
-    }
-
     idTable.openScope();
     ast.FPS.visit(this, null);
+
+    visitPendingCalls(ast.I);
+
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     idTable.closeScope();
     if (! ast.T.equals(eType))
@@ -346,18 +339,13 @@ public final class Checker implements Visitor {
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
 
-    CallExpression cE = idTable.checkPendingCallExp(ast.I);
-    if( cE != null){
-      cE.visit(this, null);
-    }
-
-    CallCommand cC = idTable.checkPendingCallCmd(ast.I);
-    if( cC != null){
-      cC.visit(this, null);
-    }
 
     idTable.openScope();
+
     ast.FPS.visit(this, null);
+
+    visitPendingCalls(ast.I);
+
     ast.C.visit(this, null);
     idTable.closeScope();
     return null;
@@ -1056,6 +1044,17 @@ public final class Checker implements Visitor {
     StdEnvironment.equalDecl = declareStdBinaryOp("=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
     StdEnvironment.unequalDecl = declareStdBinaryOp("\\=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
 
+  }
+
+
+  private void visitPendingCalls(Identifier ast){
+    CallExpression cE = idTable.checkPendingCallExp(ast);
+    if( cE != null)
+      cE.visit(this, null);
+
+    CallCommand cC = idTable.checkPendingCallCmd(ast);
+    if( cC != null)
+      cC.visit(this, null);
   }
 }
 
