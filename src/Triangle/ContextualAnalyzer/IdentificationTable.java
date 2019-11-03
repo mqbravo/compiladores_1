@@ -26,14 +26,12 @@ public final class IdentificationTable {
   private int level;
   private int recLevel;
   private IdEntry latest;
-  public ArrayList<CallExpression> pendingCallExp;
-  public ArrayList<CallCommand> pendingCallCmd;
+  public ArrayList<PendingCall> pendingCalls;
 
   public IdentificationTable () {
     level = recLevel = 0;
     latest = null;
-    pendingCallExp = new ArrayList<>();
-    pendingCallCmd = new ArrayList<>();
+    pendingCalls = new ArrayList<>();
   }
 
   // Opens a new level in the identification table, 1 higher than the
@@ -157,36 +155,19 @@ public final class IdentificationTable {
     return recLevel;
   }
 
-  public void addPendingCallExpression(CallExpression callExpression){
-    pendingCallExp.add(callExpression);
+  public void addPendingCall(PendingCall pendingCall){
+    pendingCalls.add(pendingCall);
   }
 
+  public ArrayList<PendingCall> checkPendingCalls(Identifier pfId){
 
-  public void addPendingCallCommand(CallCommand callCommand){
-    pendingCallCmd.add(callCommand);
-  }
+    ArrayList<PendingCall> toVisit = new ArrayList<>();
 
-  public ArrayList<CallExpression> checkPendingCallExp(Identifier pfId){
-
-    ArrayList<CallExpression> toVisit = new ArrayList<>();
-
-    for(CallExpression c : pendingCallExp)
-      if (c.I.equals(pfId))
+    for(PendingCall c : pendingCalls)
+      if (c.getProcFuncIdentifier().equals(pfId))
         toVisit.add(c);
 
-    pendingCallExp.removeAll(toVisit);
-
-    return toVisit;
-  }
-
-  public ArrayList<CallCommand> checkPendingCallCmd(Identifier pfId){
-    ArrayList<CallCommand> toVisit = new ArrayList<>();
-
-    for(CallCommand c : pendingCallCmd)
-      if (c.I.equals(pfId))
-        toVisit.add(c);
-
-    pendingCallCmd.removeAll(toVisit);
+    pendingCalls.removeAll(toVisit);
 
     return toVisit;
   }

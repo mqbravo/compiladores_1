@@ -44,7 +44,7 @@ public final class Checker implements Visitor {
     Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null) {
       if (idTable.getRecLevel() > 0)
-        idTable.addPendingCallCommand(ast);
+        idTable.addPendingCall(new PendingCallCommand(this.idTable, ast));
 
       else
         reportUndeclared(ast.I);
@@ -201,7 +201,7 @@ public final class Checker implements Visitor {
     Declaration binding = (Declaration) ast.I.visit(this, null);
     if (binding == null) {
       if(idTable.getRecLevel() > 0)
-        idTable.addPendingCallExpression(ast);
+        idTable.addPendingCall(new PendingCallExpression(this.idTable, ast));
 
       else {
         reportUndeclared(ast.I);
@@ -403,14 +403,9 @@ public final class Checker implements Visitor {
     ast.D.visit(this, null);
     idTable.closeRecursiveScope();
 
-    if(idTable.getRecLevel() == 0 && idTable.pendingCallExp.size() > 0){
+    if(idTable.getRecLevel() == 0 && idTable.pendingCalls.size() > 0){
       reporter.reportError("\"%\" is not a procedure or function identifier",
-              idTable.pendingCallExp.get(0).I.spelling, idTable.pendingCallExp.get(0).I.position);
-    }
-
-    else if(idTable.getRecLevel() == 0 && idTable.pendingCallCmd.size() > 0){
-      reporter.reportError("\"%\" is not a procedure or function identifier",
-              idTable.pendingCallCmd.get(0).I.spelling, idTable.pendingCallCmd.get(0).I.position);
+              idTable.pendingCalls.get(0).getProcFuncIdentifier().spelling, idTable.pendingCalls.get(0).getProcFuncIdentifier().position);
     }
 
     return null;
@@ -1049,24 +1044,24 @@ public final class Checker implements Visitor {
   }
 
 
-  private void visitPendingCalls(Identifier I){
-    ArrayList<CallExpression> cE = idTable.checkPendingCallExp(I);
+  private void visitPendingCalls(Identifier I) {
+    ArrayList<PendingCall> pendingCalls = idTable.checkPendingCalls(I);
+    IdentificationTable currentIdTable = this.idTable;
 
     //Checking if there are pending "I" call expressions to visit
-    if(cE.size() > 0)
-      for (CallExpression c : cE)
-        c.visit(this, null); //Visit each of them
+    if (pendingCalls.size() > 0)
+      for (PendingCall pC : pendingCalls) {
+        this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
+        pC.visitPendingCall(this, null); //Visit each of them
+      }
 
-    ArrayList<CallCommand> cC = idTable.checkPendingCallCmd(I);
-
-    //Checking if there are pending "I" call expressions to visit
-    if(cC.size() > 0)
-      for (CallCommand c : cC)
-        c.visit(this, null); //Visit each of them
+    this.idTable = currentIdTable; //Sets the id table back
   }
 }
 
 
 //TODO Hacer que ademas de chequear solo por la llamada de la funcion pendiente, que se revise en el nivel que se llama.
-//TODO Revisar como funciona el id table, porque parece que las funciones declaradas en un scope se remueven.
-//TODO Revisar desde cuando esta el codigo de chequear funciones, porque parece que desde ahi es donde esta viniendo el problema de los scopes
+//TODO Revisar si aun es necesario el TODO de arriba
+/**TODO En los calls commands, se pueden hacer llamadas con variables locales, cuando se haga la revision de una llamada pendiente
+esta puede que ya no esté en su mismo scope, por lo que se debe guardar además del AST de la llamada, una copia de la tabla
+de identificación en el momento en que fue llamada la función, para poder sacar las variables a las que se refiere**/
