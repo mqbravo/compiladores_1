@@ -6,10 +6,8 @@ let
 	func doble2(var i : Integer) : Integer ~
             triplicar(i)/3*2
 	and
-	func doble3(var i : Integer) : Integer ~
-            triplicar(i)/3*2
-    end
+	
 in
     skip
 end
-! Pruebas para FuncProcs y recursive
+! Pruebas para FuncProcs y recursive, error ya que no hay Proc o Func despues del and
