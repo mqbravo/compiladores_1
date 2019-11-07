@@ -50,7 +50,7 @@ public final class Checker implements Visitor {
 
     if (binding == null) {
       if (idTable.getRecLevel() > 0)
-        idTable.addPendingCall(new PendingCallCommand(new IdentificationTable(this.idTable), ast));
+        idTable.addPendingCall(new PendingCallCommand(new IdentificationTable(idTable), ast));
 
       else
         reportUndeclared(ast.I);
@@ -214,7 +214,7 @@ public final class Checker implements Visitor {
 
     if (binding == null) {
       if(idTable.getRecLevel() > 0)
-        idTable.addPendingCall(new PendingCallExpression(new IdentificationTable(this.idTable), ast));
+        idTable.addPendingCall(new PendingCallExpression(new IdentificationTable(idTable),ast));
 
       else {
         reportUndeclared(ast.I);
@@ -409,7 +409,6 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  //@todo implement
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
     idTable.openRecursiveScope();
@@ -1061,21 +1060,15 @@ public final class Checker implements Visitor {
     ArrayList<PendingCall> pendingCalls = idTable.checkPendingCalls(I);
     IdentificationTable currentIdTable = this.idTable;
 
-    //Checking if there are pending "I" call expressions to visit
-    if (pendingCalls.size() > 0)
-      for (PendingCall pC : pendingCalls) {
-        Declaration procDecl = (Declaration)I.visit(this, null);
+    for (PendingCall pC : pendingCalls) {
+      Declaration procDecl = (Declaration) I.visit(this, null);
 
-        if(this.idTable != pC.getCallContextIdTable())
-          this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
+      this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
 
-        pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
+      pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
 
-        this.idTable = currentIdTable; //Sets the id table back
-      }
+      this.idTable = currentIdTable; //Sets the id table back
+    }
+
   }
 }
-
-
-//TODO Hacer que ademas de chequear solo por la llamada de la funcion pendiente, que se revise en el nivel que se llama.
-//TODO Revisar si aun es necesario el TODO de arriba

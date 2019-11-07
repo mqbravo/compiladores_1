@@ -157,8 +157,20 @@ public final class IdentificationTable {
     recLevel--;
   }
 
-  public int getRecLevel(){
+  public int getLevel() {
+    return level;
+  }
+
+  public void setLevel(int level) {
+    this.level = level;
+  }
+
+  public int getRecLevel() {
     return recLevel;
+  }
+
+  public void setRecLevel(int recLevel) {
+    this.recLevel = recLevel;
   }
 
   public void addPendingCall(PendingCall pendingCall){
@@ -168,9 +180,13 @@ public final class IdentificationTable {
   public ArrayList<PendingCall> checkPendingCalls(Identifier pfId){
 
     ArrayList<PendingCall> toVisit = new ArrayList<>();
+    //(When the program access this method,it does it in the level of the routine's body, so it's needed to subtract 1
+    //to get the level of its declaration)
+    int declLevel = level -1;
 
     for(PendingCall c : pendingCalls)
-      if (c.getProcFuncIdentifier().equals(pfId))
+      //Check if the call's level is deeper than the level of the declaration.
+      if (c.getLevel() > declLevel && c.getProcFuncIdentifier().equals(pfId))
         toVisit.add(c);
 
     pendingCalls.removeAll(toVisit);
