@@ -9,7 +9,8 @@ import Core.Console.OutputRedirector;
 import Core.IDE.IDEDisassembler;
 import Core.IDE.IDEInterpreter;
 import Core.Visitors.TableVisitor;
-import java.awt.Toolkit;
+
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -26,7 +27,6 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import javax.swing.ImageIcon;
-import java.awt.Image;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.LookAndFeel;
@@ -161,6 +161,7 @@ public class Main extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        this.setBackground(Color.DARK_GRAY);
         toolBarsPanel = new javax.swing.JPanel();
         fileToolBar = new javax.swing.JToolBar();
         buttonNew = new javax.swing.JButton();

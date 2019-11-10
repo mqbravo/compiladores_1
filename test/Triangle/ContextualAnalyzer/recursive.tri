@@ -51,4 +51,5 @@ end !let decl
 
 in
 foo()
-end !Program end
+end
+!Program end

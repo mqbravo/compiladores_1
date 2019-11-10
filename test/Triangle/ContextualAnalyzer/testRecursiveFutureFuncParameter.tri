@@ -5,6 +5,9 @@ let
 	and
 		func Q(i: Integer): Integer~
 			i+1
+	and
+		func Q(i2: Integer): Integer ~
+			i + 1
 	end
 in
 	putint(P(func Q))
