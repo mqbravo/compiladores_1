@@ -1,0 +1,55 @@
+let
+  recursive
+    proc foo() ~
+      oneParam()
+    end !foo() decl
+
+  and
+
+    proc routine() ~
+      let
+        recursive
+
+          proc bar()~
+            let
+                var a init 'a'
+            in
+                oneParam(a)
+           end
+          end !bar() decl
+
+        and
+          proc dummy()~
+            oneParam('b')
+          end !dummy() decl
+
+        and
+
+          proc oneParam(i : Char)~
+            S()
+          end
+
+        end !recursive decl
+
+      in
+        oneParam('a')
+      end !let decl
+
+    end !routine() decl
+
+  and
+    proc S()~
+        skip
+    end
+
+  and
+    proc oneParam() ~
+    skip
+    end
+
+end !let decl
+
+in
+foo()
+end
+!Program end

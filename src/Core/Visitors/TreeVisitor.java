@@ -189,7 +189,7 @@ public class TreeVisitor implements Visitor {
 
     @Override
     public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-        return(createUnary("Variable Recursive", ast.procFuncAST));
+        return(createUnary("Variable Recursive", ast.D));
     }
 
     @Override

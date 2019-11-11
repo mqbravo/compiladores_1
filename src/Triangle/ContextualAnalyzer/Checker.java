@@ -19,6 +19,8 @@ import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
+import java.util.ArrayList;
+
 public final class Checker implements Visitor {
 
   // Commands
@@ -38,10 +40,22 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitCallCommand(CallCommand ast, Object o) {
+    Declaration binding;
 
-    Declaration binding = (Declaration) ast.I.visit(this, null);
-    if (binding == null)
-      reportUndeclared(ast.I);
+    if(o != null)
+      binding = (Declaration)o;
+
+    else
+      binding = (Declaration) ast.I.visit(this, null);
+
+    if (binding == null) {
+      if (idTable.getRecLevel() > 0)
+        idTable.addPendingCall(new PendingCallCommand(new IdentificationTable(idTable), ast));
+
+      else
+        reportUndeclared(ast.I);
+    }
+
     else if (binding instanceof ProcDeclaration) {
       ast.APS.visit(this, ((ProcDeclaration) binding).FPS);
     } else if (binding instanceof ProcFormalParameter) {
@@ -51,7 +65,7 @@ public final class Checker implements Visitor {
                            ast.I.spelling, ast.I.position);
     return null;
   }
-  
+
   @Override
   public Object visitEmptyCommand(EmptyCommand ast, Object o) {
     return null;
@@ -82,7 +96,7 @@ public final class Checker implements Visitor {
     ast.C2.visit(this, null);
     return null;
   }
-  
+
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
     TypeDenoter idenExpressionType = (TypeDenoter) ast.IdenExpression.visit(this, null);
@@ -95,7 +109,7 @@ public final class Checker implements Visitor {
     idTable.closeScope();
     return null;
   }
-  
+
   @Override
   public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
       TypeDenoter eType = (TypeDenoter)ast.E.visit(this, null);
@@ -190,10 +204,23 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitCallExpression(CallExpression ast, Object o) {
-    Declaration binding = (Declaration) ast.I.visit(this, null);
+    Declaration binding;
+
+    if(o != null)
+      binding = (Declaration)o;
+
+    else
+      binding = (Declaration) ast.I.visit(this, null);
+
     if (binding == null) {
-      reportUndeclared(ast.I);
-      ast.type = StdEnvironment.errorType;
+      if(idTable.getRecLevel() > 0)
+        idTable.addPendingCall(new PendingCallExpression(new IdentificationTable(idTable),ast));
+
+      else {
+        reportUndeclared(ast.I);
+        ast.type = StdEnvironment.errorType;
+      }
+
     } else if (binding instanceof FuncDeclaration) {
       ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
       ast.type = ((FuncDeclaration) binding).T;
@@ -214,8 +241,7 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitEmptyExpression(EmptyExpression ast, Object o) {
-    ast.type = null;
-    return ast.type;
+    return null;
   }
 
   @Override
@@ -303,11 +329,16 @@ public final class Checker implements Visitor {
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
     ast.T = (TypeDenoter) ast.T.visit(this, null);
     idTable.enter (ast.I.spelling, ast); // permits recursion
-    if (ast.duplicated)
+    if (ast.duplicated) {
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
+    }
+
     idTable.openScope();
     ast.FPS.visit(this, null);
+
+    visitPendingCalls(ast.I);
+
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     idTable.closeScope();
     if (! ast.T.equals(eType))
@@ -322,8 +353,14 @@ public final class Checker implements Visitor {
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
                             ast.I.spelling, ast.position);
+
+
     idTable.openScope();
+
     ast.FPS.visit(this, null);
+
+    visitPendingCalls(ast.I);
+
     ast.C.visit(this, null);
     idTable.closeScope();
     return null;
@@ -372,10 +409,18 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  //@todo implement
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    idTable.openRecursiveScope();
+    ast.D.visit(this, null);
+    idTable.closeRecursiveScope();
+
+    if(idTable.getRecLevel() == 0 && idTable.pendingCalls.size() > 0){
+      reporter.reportError("\"%\" is not a procedure or function identifier",
+              idTable.pendingCalls.get(0).getProcFuncIdentifier().spelling, idTable.pendingCalls.get(0).getProcFuncIdentifier().position);
+    }
+
+    return null;
   }
 
   @Override
@@ -1007,6 +1052,23 @@ public final class Checker implements Visitor {
     StdEnvironment.puteolDecl = declareStdProc("puteol", new EmptyFormalParameterSequence(dummyPos));
     StdEnvironment.equalDecl = declareStdBinaryOp("=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
     StdEnvironment.unequalDecl = declareStdBinaryOp("\\=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
+
+  }
+
+
+  private void visitPendingCalls(Identifier I) {
+    ArrayList<PendingCall> pendingCalls = idTable.checkPendingCalls(I);
+    IdentificationTable currentIdTable = this.idTable;
+
+    for (PendingCall pC : pendingCalls) {
+      Declaration procDecl = (Declaration) I.visit(this, null);
+
+      this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
+
+      pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
+
+      this.idTable = currentIdTable; //Sets the id table back
+    }
 
   }
 }

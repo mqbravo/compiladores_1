@@ -14,18 +14,32 @@
 
 package Triangle.ContextualAnalyzer;
 
+import Triangle.AbstractSyntaxTrees.CallCommand;
+import Triangle.AbstractSyntaxTrees.CallExpression;
 import Triangle.AbstractSyntaxTrees.Declaration;
+import Triangle.AbstractSyntaxTrees.Identifier;
+
+import java.util.ArrayList;
 
 public final class IdentificationTable {
 
   private int level;
+  private int recLevel;
   private IdEntry latest;
+  public ArrayList<PendingCall> pendingCalls;
 
   public IdentificationTable () {
-    level = 0;
+    level = recLevel = 0;
     latest = null;
+    pendingCalls = new ArrayList<>();
   }
 
+  public IdentificationTable(IdentificationTable oldIdTable){
+    this.level = oldIdTable.level;
+    this.latest = oldIdTable.latest;
+    //this.recLevel = oldIdTable.recLevel;
+    //this.pendingCalls = oldIdTable.pendingCalls;
+  }
   // Opens a new level in the identification table, 1 higher than the
   // current topmost level.
 
@@ -43,10 +57,10 @@ public final class IdentificationTable {
 
     // Presumably, idTable.level > 0.
     entry = this.latest;
-    do {
+    while (entry.level == this.level){
       local = entry;
       entry = local.previous;
-    } while (entry.level == this.level);
+    }
     this.level--;
     this.latest = entry;
   }
@@ -111,27 +125,73 @@ public final class IdentificationTable {
    */
   public void closeLocalScope(){
     
-     IdEntry entry, local, localEntry;
+     IdEntry entry = this.latest, local = entry, localEntry;
 
     // Presumably, idTable.level > 0.
     // First, I need to point local towards the first declaration in this scope
-    entry = this.latest;
-    do {
+    
+    while (entry.level == this.level) {
       local = entry;
       local.level = local.level-2;
       entry = local.previous;
-    } while (entry.level == this.level);
+    }
     
     //Now, I need to skip all the entries belonging to the previous scope (local variables' scope)
-    do {
+    while (entry.level == this.level-1) {
       localEntry = entry;
       entry = localEntry.previous;
-    } while (entry.level == this.level-1);
+    }
     
     //Now I anchor the entries I defined by using local declarations to the level they were in
     local.previous = entry;
     
     //And submit the changes in the scope level
     this.level = level-2;
-  }  
+  }
+
+  public void openRecursiveScope(){
+    recLevel++;
+  }
+
+  public void closeRecursiveScope(){
+    recLevel--;
+  }
+
+  public int getLevel() {
+    return level;
+  }
+
+  public void setLevel(int level) {
+    this.level = level;
+  }
+
+  public int getRecLevel() {
+    return recLevel;
+  }
+
+  public void setRecLevel(int recLevel) {
+    this.recLevel = recLevel;
+  }
+
+  public void addPendingCall(PendingCall pendingCall){
+    pendingCalls.add(pendingCall);
+  }
+
+  public ArrayList<PendingCall> checkPendingCalls(Identifier pfId){
+
+    ArrayList<PendingCall> toVisit = new ArrayList<>();
+    //(When the program access this method,it does it in the level of the routine's body, so it's needed to subtract 1
+    //to get the level of its declaration)
+    int declLevel = level -1;
+
+    for(PendingCall c : pendingCalls)
+      //Check if the call's level is deeper than the level of the declaration.
+      if (c.getLevel() > declLevel && c.getProcFuncIdentifier().equals(pfId))
+        toVisit.add(c);
+
+    pendingCalls.removeAll(toVisit);
+
+    return toVisit;
+  }
+
 }

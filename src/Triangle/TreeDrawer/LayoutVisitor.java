@@ -165,7 +165,7 @@ public class LayoutVisitor implements Visitor {
 
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-    return layoutUnary("Recursive.Decl", ast.procFuncAST);
+    return layoutUnary("Recursive.Decl", ast.D);
   }
 
   @Override
