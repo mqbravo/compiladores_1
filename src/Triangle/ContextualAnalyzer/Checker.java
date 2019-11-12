@@ -101,7 +101,9 @@ public final class Checker implements Visitor {
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
     TypeDenoter idenExpressionType = (TypeDenoter) ast.IdenExpression.visit(this, null);
     TypeDenoter haltExpressionType = (TypeDenoter) ast.E.visit(this, null);
-    if (!idenExpressionType.equals(StdEnvironment.integerType) || !haltExpressionType.equals(StdEnvironment.integerType))
+    if (!idenExpressionType.equals(StdEnvironment.integerType))
+      reporter.reportError("Integer expression expected here", "", ast.IdenExpression.position);
+    if (!haltExpressionType.equals(StdEnvironment.integerType))
       reporter.reportError("Integer expression expected here", "", ast.E.position);
     idTable.openScope();
     idTable.enter(ast.Identifier.spelling, new ConstDeclaration(ast.Identifier, ast.IdenExpression, ast.position));
