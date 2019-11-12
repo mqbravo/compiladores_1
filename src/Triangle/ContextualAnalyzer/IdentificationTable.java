@@ -88,7 +88,7 @@ public final class IdentificationTable {
     if (localLevel > 0) {
       // I know entry cannot be null
       // I need to do a greater search, for this I need to skip the local level
-      while (entry.level == this.level-1) {        
+      while (entry.level == this.level-1) {
         entry = entry.previous;
       }
       

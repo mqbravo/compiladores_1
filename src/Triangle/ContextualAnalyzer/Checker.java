@@ -425,9 +425,9 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-    idTable.openLocalScope();
-    ast.dAST1.visit(this, null);
     idTable.openScope();
+    ast.dAST1.visit(this, null);
+    idTable.openLocalScope();
     ast.dAST2.visit(this, null);
     idTable.closeLocalScope();
     return null;
