@@ -86,14 +86,8 @@ public final class IdentificationTable {
     }
     
     if (localLevel > 0) {
-      // I know entry cannot be null
-      // I need to do a greater search, for this I need to skip the local level
-      while (entry.level == this.level-1) {
-        entry = entry.previous;
-      }
-      
-      // Now I need to make a search
-      while (entry != null && entry.level == this.level-2) {
+      // I need to do a greater search, search the previously defined levels:
+      while (entry != null && entry.level >= this.level-2) {
         if (entry.id.equals(id)) {
           //Repeteated, and marked as such
           present = true;
