@@ -1,0 +1,9 @@
+let
+	local
+		var x: Integer
+	in
+		var x: Integer
+	end
+in
+	x:=5
+end
