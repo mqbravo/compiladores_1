@@ -23,8 +23,8 @@ import java.util.ArrayList;
 
 public final class Checker implements Visitor {
 
-  // Commands
-
+  // <editor-fold defaultstate="collapsed" desc="Commands">
+  
   // Always returns null. Does not use the given object.
 
   @Override
@@ -160,7 +160,9 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  // Expressions
+  // </editor-fold>
+  
+  // <editor-fold defaultstate="collapsed" desc="Expressions">
 
   // Returns the TypeDenoter denoting the type of the expression. Does
   // not use the given object.
@@ -309,7 +311,9 @@ public final class Checker implements Visitor {
     return ast.type;
   }
 
-  // Declarations
+  // </editor-fold>
+  
+  // <editor-fold defaultstate="collapsed" desc="Declarations">
 
   // Always returns null. Does not use the given object.
   @Override
@@ -435,6 +439,10 @@ public final class Checker implements Visitor {
     return null;
   }
 
+  // </editor-fold>
+  
+  // <editor-fold defaultstate="collapsed" desc="Aggregates">
+  
   // Array Aggregates
 
   // Returns the TypeDenoter for the Array Aggregate. Does not use the
@@ -480,7 +488,11 @@ public final class Checker implements Visitor {
     ast.type = new SingleFieldTypeDenoter(ast.I, eType, ast.position);
     return ast.type;
   }
+  
+  // </editor-fold>
 
+  // <editor-fold defaultstate="collapsed" desc="Parameters">
+  
   // Formal Parameters
 
   // Always returns null. Does not use the given object.
@@ -675,7 +687,9 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  // Type Denoters
+  // </editor-fold>
+  
+  // <editor-fold defaultstate="collapsed" desc="Type Denoters and Variables">
 
   // Returns the expanded version of the TypeDenoter. Does not
   // use the given object.
@@ -772,7 +786,7 @@ public final class Checker implements Visitor {
       O.decl = binding;
     return binding;
   }
-
+  
   // Value-or-variable names
 
   // Determines the address of a named object (constant or variable).
@@ -853,7 +867,11 @@ public final class Checker implements Visitor {
     }
     return ast.type;
   }
-
+  
+  // </editor-fold>
+  
+  // <editor-fold defaultstate="collapsed" desc="Auxiliar Methods">
+  
   // Programs
 
   @Override
@@ -884,7 +902,7 @@ public final class Checker implements Visitor {
   }
 
   private IdentificationTable idTable;
-  private static final SourcePosition dummyPos = new SourcePosition();
+  private static final SourcePosition DUMMYPOS = new SourcePosition();
   private final ErrorReporter reporter;
 
   // Reports that the identifier or operator used at a leaf of the AST
@@ -913,7 +931,23 @@ public final class Checker implements Visitor {
     }
     return StdEnvironment.errorType;
   }
+  
+  private void visitPendingCalls(Identifier I) {
+    ArrayList<PendingCall> pendingCalls = idTable.checkPendingCalls(I);
+    IdentificationTable currentIdTable = this.idTable;
 
+    pendingCalls.stream().map((pC) -> {
+      Declaration procDecl = (Declaration) I.visit(this, null);
+      this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
+      pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
+      return pC;
+    }).forEachOrdered((_item) -> {
+      this.idTable = currentIdTable; //Sets the id table back
+    });
+  }
+  // </editor-fold>
+  
+  // <editor-fold defaultstate="collapsed" desc="Standard Environment">
 
   // Creates a small AST to represent the "declaration" of a standard
   // type, and enters it in the identification table.
@@ -922,7 +956,7 @@ public final class Checker implements Visitor {
 
     TypeDeclaration binding;
 
-    binding = new TypeDeclaration(new Identifier(id, dummyPos), typedenoter, dummyPos);
+    binding = new TypeDeclaration(new Identifier(id, DUMMYPOS), typedenoter, DUMMYPOS);
     idTable.enter(id, binding);
     return binding;
   }
@@ -936,9 +970,9 @@ public final class Checker implements Visitor {
     ConstDeclaration binding;
 
     // constExpr used only as a placeholder for constType
-    constExpr = new IntegerExpression(null, dummyPos);
+    constExpr = new IntegerExpression(null, DUMMYPOS);
     constExpr.type = constType;
-    binding = new ConstDeclaration(new Identifier(id, dummyPos), constExpr, dummyPos);
+    binding = new ConstDeclaration(new Identifier(id, DUMMYPOS), constExpr, DUMMYPOS);
     idTable.enter(id, binding);
     return binding;
   }
@@ -950,8 +984,8 @@ public final class Checker implements Visitor {
 
     ProcDeclaration binding;
 
-    binding = new ProcDeclaration(new Identifier(id, dummyPos), fps,
-                                  new EmptyCommand(dummyPos), dummyPos);
+    binding = new ProcDeclaration(new Identifier(id, DUMMYPOS), fps,
+                                  new EmptyCommand(DUMMYPOS), DUMMYPOS);
     idTable.enter(id, binding);
     return binding;
   }
@@ -964,8 +998,8 @@ public final class Checker implements Visitor {
 
     FuncDeclaration binding;
 
-    binding = new FuncDeclaration(new Identifier(id, dummyPos), fps, resultType,
-                                  new EmptyExpression(dummyPos), dummyPos);
+    binding = new FuncDeclaration(new Identifier(id, DUMMYPOS), fps, resultType,
+                                  new EmptyExpression(DUMMYPOS), DUMMYPOS);
     idTable.enter(id, binding);
     return binding;
   }
@@ -979,8 +1013,8 @@ public final class Checker implements Visitor {
 
     UnaryOperatorDeclaration binding;
 
-    binding = new UnaryOperatorDeclaration (new Operator(op, dummyPos),
-                                            argType, resultType, dummyPos);
+    binding = new UnaryOperatorDeclaration (new Operator(op, DUMMYPOS),
+                                            argType, resultType, DUMMYPOS);
     idTable.enter(op, binding);
     return binding;
   }
@@ -994,8 +1028,8 @@ public final class Checker implements Visitor {
 
     BinaryOperatorDeclaration binding;
 
-    binding = new BinaryOperatorDeclaration (new Operator(op, dummyPos),
-                                             arg1Type, arg2type, resultType, dummyPos);
+    binding = new BinaryOperatorDeclaration (new Operator(op, DUMMYPOS),
+                                             arg1Type, arg2type, resultType, DUMMYPOS);
     idTable.enter(op, binding);
     return binding;
   }
@@ -1005,16 +1039,16 @@ public final class Checker implements Visitor {
   // constants, procedures, functions, and operators.
   // Enters these "declarations" in the identification table.
 
-  private final static Identifier dummyI = new Identifier("", dummyPos);
+  private final static Identifier DUMMYIDENTIFIER = new Identifier("", DUMMYPOS);
 
   private void establishStdEnvironment () {
 
     // idTable.startIdentification();
-    StdEnvironment.booleanType = new BoolTypeDenoter(dummyPos);
-    StdEnvironment.integerType = new IntTypeDenoter(dummyPos);
-    StdEnvironment.charType = new CharTypeDenoter(dummyPos);
-    StdEnvironment.anyType = new AnyTypeDenoter(dummyPos);
-    StdEnvironment.errorType = new ErrorTypeDenoter(dummyPos);
+    StdEnvironment.booleanType = new BoolTypeDenoter(DUMMYPOS);
+    StdEnvironment.integerType = new IntTypeDenoter(DUMMYPOS);
+    StdEnvironment.charType = new CharTypeDenoter(DUMMYPOS);
+    StdEnvironment.anyType = new AnyTypeDenoter(DUMMYPOS);
+    StdEnvironment.errorType = new ErrorTypeDenoter(DUMMYPOS);
 
     StdEnvironment.booleanDecl = declareStdType("Boolean", StdEnvironment.booleanType);
     StdEnvironment.falseDecl = declareStdConst("false", StdEnvironment.booleanType);
@@ -1037,40 +1071,25 @@ public final class Checker implements Visitor {
 
     StdEnvironment.charDecl = declareStdType("Char", StdEnvironment.charType);
     StdEnvironment.chrDecl = declareStdFunc("chr", new SingleFormalParameterSequence(
-                                      new ConstFormalParameter(dummyI, StdEnvironment.integerType, dummyPos), dummyPos), StdEnvironment.charType);
+                                      new ConstFormalParameter(DUMMYIDENTIFIER, StdEnvironment.integerType, DUMMYPOS), DUMMYPOS), StdEnvironment.charType);
     StdEnvironment.ordDecl = declareStdFunc("ord", new SingleFormalParameterSequence(
-                                      new ConstFormalParameter(dummyI, StdEnvironment.charType, dummyPos), dummyPos), StdEnvironment.integerType);
-    StdEnvironment.eofDecl = declareStdFunc("eof", new EmptyFormalParameterSequence(dummyPos), StdEnvironment.booleanType);
-    StdEnvironment.eolDecl = declareStdFunc("eol", new EmptyFormalParameterSequence(dummyPos), StdEnvironment.booleanType);
+                                      new ConstFormalParameter(DUMMYIDENTIFIER, StdEnvironment.charType, DUMMYPOS), DUMMYPOS), StdEnvironment.integerType);
+    StdEnvironment.eofDecl = declareStdFunc("eof", new EmptyFormalParameterSequence(DUMMYPOS), StdEnvironment.booleanType);
+    StdEnvironment.eolDecl = declareStdFunc("eol", new EmptyFormalParameterSequence(DUMMYPOS), StdEnvironment.booleanType);
     StdEnvironment.getDecl = declareStdProc("get", new SingleFormalParameterSequence(
-                                      new VarFormalParameter(dummyI, StdEnvironment.charType, dummyPos), dummyPos));
+                                      new VarFormalParameter(DUMMYIDENTIFIER, StdEnvironment.charType, DUMMYPOS), DUMMYPOS));
     StdEnvironment.putDecl = declareStdProc("put", new SingleFormalParameterSequence(
-                                      new ConstFormalParameter(dummyI, StdEnvironment.charType, dummyPos), dummyPos));
+                                      new ConstFormalParameter(DUMMYIDENTIFIER, StdEnvironment.charType, DUMMYPOS), DUMMYPOS));
     StdEnvironment.getintDecl = declareStdProc("getint", new SingleFormalParameterSequence(
-                                            new VarFormalParameter(dummyI, StdEnvironment.integerType, dummyPos), dummyPos));
+                                            new VarFormalParameter(DUMMYIDENTIFIER, StdEnvironment.integerType, DUMMYPOS), DUMMYPOS));
     StdEnvironment.putintDecl = declareStdProc("putint", new SingleFormalParameterSequence(
-                                            new ConstFormalParameter(dummyI, StdEnvironment.integerType, dummyPos), dummyPos));
-    StdEnvironment.geteolDecl = declareStdProc("geteol", new EmptyFormalParameterSequence(dummyPos));
-    StdEnvironment.puteolDecl = declareStdProc("puteol", new EmptyFormalParameterSequence(dummyPos));
+                                            new ConstFormalParameter(DUMMYIDENTIFIER, StdEnvironment.integerType, DUMMYPOS), DUMMYPOS));
+    StdEnvironment.geteolDecl = declareStdProc("geteol", new EmptyFormalParameterSequence(DUMMYPOS));
+    StdEnvironment.puteolDecl = declareStdProc("puteol", new EmptyFormalParameterSequence(DUMMYPOS));
     StdEnvironment.equalDecl = declareStdBinaryOp("=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
     StdEnvironment.unequalDecl = declareStdBinaryOp("\\=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
 
   }
 
-
-  private void visitPendingCalls(Identifier I) {
-    ArrayList<PendingCall> pendingCalls = idTable.checkPendingCalls(I);
-    IdentificationTable currentIdTable = this.idTable;
-
-    for (PendingCall pC : pendingCalls) {
-      Declaration procDecl = (Declaration) I.visit(this, null);
-
-      this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
-
-      pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
-
-      this.idTable = currentIdTable; //Sets the id table back
-    }
-
-  }
+  // </editor-fold>
 }
