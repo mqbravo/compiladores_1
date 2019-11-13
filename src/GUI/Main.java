@@ -619,7 +619,7 @@ public class Main extends javax.swing.JFrame {
                 ((FileFrame)desktopPane.getSelectedFrame()).setTable(tableVisitor.getTable(compiler.getAST()));
                 
                 runMenuItem.setEnabled(true);
-                buttonRun.setEnabled(false);
+                buttonRun.setEnabled(true);
             } else {
                 ((FileFrame)desktopPane.getSelectedFrame()).highlightError(compiler.getErrorPosition());
                 runMenuItem.setEnabled(false);
