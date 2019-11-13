@@ -357,7 +357,10 @@ public final class Encoder implements Visitor {
   //@todo implement
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    Frame frame = (Frame) o;
+    int extraSize  = ((Integer) ast.dAST1.visit(this, frame));
+        extraSize += ((Integer) ast.dAST2.visit(this, frame));
+    return extraSize;
   }
 
   // </editor-fold>
