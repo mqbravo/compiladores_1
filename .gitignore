@@ -131,3 +131,6 @@ fabric.properties
 output/
 
 # End of https://www.gitignore.io/api/java,netbeans,intellij
+
+# Compiled TAM Files (For the Compiler Output)
+*.tam
