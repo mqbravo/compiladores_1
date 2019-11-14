@@ -78,14 +78,6 @@ public class TableVisitor implements Visitor {
       return(null);
   }
   
-//    @Override
-//  public Object visitLoopCommand(LoopCommand ast, Object o) {
-//      ast.E.visit(this, null);
-//      ast.C.visit(this, null);
-//      
-//      return(null);
-//  }
-  
     @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
       ast.IdenExpression.visit(this, null);
@@ -300,10 +292,11 @@ public class TableVisitor implements Visitor {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    //@ TODO: IMPLEMENT
     @Override
     public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ast.dAST1.visit(this, null);
+        ast.dAST2.visit(this, null);
+        return(null);
     }
 
     // </editor-fold>
