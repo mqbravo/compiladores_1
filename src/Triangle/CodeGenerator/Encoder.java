@@ -345,7 +345,37 @@ public final class Encoder implements Visitor {
   //@TODO Implement
   @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    Frame frame = (Frame) o;
+    
+    // Fetch the size I need for this variable
+    int extraSize = (Integer) ast.T.visit(this, frame);
+    
+    // Declare its space in the stack
+    emit(Machine.PUSHop, 0, 0, extraSize);
+    
+    // I visit the expression, so it will be pushed to the stack
+    ast.E.visit(this, null);
+
+    if (ast.E instanceof CharacterExpression) {
+      CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
+      ast.entity = new KnownAddressWithValue(Machine.addressSize,
+              frame.level,
+              frame.size,
+              characterValuation(CL.spelling)
+      );
+      
+    } else if (ast.E instanceof IntegerExpression) {
+      IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
+      ast.entity = new KnownAddressWithValue(Machine.addressSize,
+              frame.level,
+              frame.size,
+              Integer.parseInt(IL.spelling)
+      );
+    } else {
+      ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
+    }
+    writeTableDetails(ast);
+    return extraSize;
   }
 
   //@todo implement
@@ -354,12 +384,10 @@ public final class Encoder implements Visitor {
     throw new UnsupportedOperationException("Not implemented yet.");
   }
 
-  //@todo implement
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-    Frame frame = (Frame) o;
-    int extraSize  = ((Integer) ast.dAST1.visit(this, frame));
-        extraSize += ((Integer) ast.dAST2.visit(this, frame));
+    int extraSize  = ((Integer) ast.dAST1.visit(this, null));
+        extraSize += ((Integer) ast.dAST2.visit(this, null));
     return extraSize;
   }
 
