@@ -622,8 +622,8 @@ public class Main extends javax.swing.JFrame {
                 buttonRun.setEnabled(true);
             } else {
                 ((FileFrame)desktopPane.getSelectedFrame()).highlightError(compiler.getErrorPosition());
-                runMenuItem.setEnabled(false);
-                buttonRun.setEnabled(false);
+                runMenuItem.setEnabled(true);
+                buttonRun.setEnabled(true);
             }
         }
     }//GEN-LAST:event_compileMenuItemActionPerformed
