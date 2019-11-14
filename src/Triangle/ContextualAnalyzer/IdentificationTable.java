@@ -22,13 +22,12 @@ import java.util.ArrayList;
 public final class IdentificationTable {
 
   private int level;
-  private int localLevel;
   private int recLevel;
   private IdEntry latest;
   public ArrayList<PendingCall> pendingCalls;
 
   public IdentificationTable () {
-    level = localLevel = recLevel = 0;
+    level = recLevel = 0;
     latest = null;
     pendingCalls = new ArrayList<>();
   }
@@ -84,18 +83,6 @@ public final class IdentificationTable {
        } else
        entry = entry.previous;
     }
-    
-    if (localLevel > 0) {
-      // I need to do a greater search, search the previously defined levels:
-      while (entry != null && entry.level >= this.level-2) {
-        if (entry.id.equals(id)) {
-          //Repeteated, and marked as such
-          present = true;
-          break;//My job is done
-        }
-        entry = entry.previous;
-      }
-    }
 
     attr.duplicated = present;
     // Add new entry ...
@@ -129,11 +116,6 @@ public final class IdentificationTable {
 
     return attr;
   }
-
-  public void openLocalScope(){
-    this.localLevel++;
-    this.level++;
-  }
   
   /**
    * This method is used to collapse the current scope on the previous scope
@@ -163,7 +145,6 @@ public final class IdentificationTable {
     
     //And submit the changes in the scope level
     this.level = level-2;
-    this.localLevel--;
   }
 
   public void openRecursiveScope(){
