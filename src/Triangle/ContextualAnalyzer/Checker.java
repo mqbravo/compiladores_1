@@ -449,7 +449,7 @@ public final class Checker implements Visitor {
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
     idTable.openScope();
     ast.dAST1.visit(this, null);
-    idTable.openLocalScope();
+    idTable.openScope();
     ast.dAST2.visit(this, null);
     idTable.closeLocalScope();
     return null;

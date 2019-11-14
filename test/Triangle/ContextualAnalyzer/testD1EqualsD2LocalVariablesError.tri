@@ -1,9 +1,9 @@
 let
 	local
-		var x: Integer
+		const x ~ 0
 	in
-		var x: Integer
+		const x ~ x+1
 	end
 in
-	x:=5
+	putint(x)
 end
