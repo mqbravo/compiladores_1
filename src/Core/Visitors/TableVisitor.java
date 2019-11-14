@@ -94,30 +94,34 @@ public class TableVisitor implements Visitor {
       
       return(null);
   }
-  
-  //@TODO: Implement
-  @Override
-  public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 
-  //@TODO: Implement
-  @Override
-  public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
+    @Override
+    public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
+        ast.E.visit(this,null);
+        ast.C.visit(this,null);
+        return null;
+    }
 
-  //@TODO: Implement
-  @Override
-  public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
+    @Override
+    public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
+        ast.C.visit(this,null);
+        ast.E.visit(this,null);
+        return null;
+    }
 
-  //@TODO: Implement
-  @Override
-  public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
+    @Override
+    public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
+        ast.E.visit(this,null);
+        ast.C.visit(this,null);
+        return null;
+    }
+
+    @Override
+    public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
+        ast.C.visit(this,null);
+        ast.E.visit(this,null);
+        return null;
+    }
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc=" Expressions ">
