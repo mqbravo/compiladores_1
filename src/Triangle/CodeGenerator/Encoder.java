@@ -347,14 +347,9 @@ public final class Encoder implements Visitor {
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
     Frame frame = (Frame) o;
     
-    // Fetch the size I need for this variable
-    int extraSize = (Integer) ast.T.visit(this, frame);
-    
-    // Declare its space in the stack
-    emit(Machine.PUSHop, 0, 0, extraSize);
-    
-    // I visit the expression, so it will be pushed to the stack
-    ast.E.visit(this, null);
+    // Visiting the expression will allow me to know how much space it needs
+    // And leaves it on top of the stack
+    int extraSize = (Integer) ast.E.visit(this, frame);
 
     if (ast.E instanceof CharacterExpression) {
       CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
@@ -386,9 +381,13 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-    int extraSize  = ((Integer) ast.dAST1.visit(this, null));
-        extraSize += ((Integer) ast.dAST2.visit(this, null));
-    return extraSize;
+    Frame frame = (Frame) o;
+    int extraSize1, extraSize2;
+
+    extraSize1 = ((Integer) ast.dAST1.visit(this, frame));
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.dAST2.visit(this, frame1));
+    return extraSize1 + extraSize2;
   }
 
   // </editor-fold>

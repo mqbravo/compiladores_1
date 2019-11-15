@@ -298,47 +298,47 @@ public class TableVisitor implements Visitor {
       ast.T.visit(this, null);
       return(null);
   }
-    //@ TODO: IMPLEMENT
-    @Override
-    public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-        try {
-          if (ast.entity instanceof KnownAddressWithValue) {
-            addIdentifier(ast.I.spelling,
-                    "KnownAddressWithValue",
-                    (ast.entity!=null?ast.entity.size:0),
-                    ((KnownAddressWithValue)ast.entity).address.level,
-                    ((KnownAddressWithValue)ast.entity).address.displacement,
-                    ((KnownAddressWithValue)ast.entity).value);
-          }
-          else if (ast.entity instanceof KnownAddress) {
-            addIdentifier(ast.I.spelling,
-                    "KnownAddress",
-                    (ast.entity!=null?ast.entity.size:0),
-                    ((KnownAddress)ast.entity).address.level,
-                    ((KnownAddress)ast.entity).address.displacement,
-                    -1);
-          }
-          
-        } catch (NullPointerException e){ }
-        
-        ast.T.visit(this, null);
-        return(null);
-    }
+  
+  @Override
+  public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
+      try {
+        if (ast.entity instanceof KnownAddressWithValue) {
+          addIdentifier(ast.I.spelling,
+                  "KnownAddressWithValue",
+                  (ast.entity!=null?ast.entity.size:0),
+                  ((KnownAddressWithValue)ast.entity).address.level,
+                  ((KnownAddressWithValue)ast.entity).address.displacement,
+                  ((KnownAddressWithValue)ast.entity).value);
+        }
+        else if (ast.entity instanceof KnownAddress) {
+          addIdentifier(ast.I.spelling,
+                  "KnownAddress",
+                  (ast.entity!=null?ast.entity.size:0),
+                  ((KnownAddress)ast.entity).address.level,
+                  ((KnownAddress)ast.entity).address.displacement,
+                  -1);
+        }
 
-    //@ TODO: IMPLEMENT
-    @Override
-    public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+      } catch (NullPointerException e){ }
 
-    @Override
-    public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
-        ast.dAST1.visit(this, null);
-        ast.dAST2.visit(this, null);
-        return(null);
-    }
+      ast.T.visit(this, null);
+      return(null);
+  }
 
-    // </editor-fold>
+  //@ TODO: IMPLEMENT
+  @Override
+  public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+      throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
+      ast.dAST1.visit(this, null);
+      ast.dAST2.visit(this, null);
+      return(null);
+  }
+
+  // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc=" Aggregates ">
   // Array Aggregates
