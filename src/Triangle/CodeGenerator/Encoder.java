@@ -79,8 +79,8 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitSequentialCommand(SequentialCommand ast, Object o) {
-    ast.C1.visit(this, o);
-    ast.C2.visit(this, o);
+    ast.C1.visit(this,o);
+    ast.C2.visit(this,o);
     return null;
   }
   
@@ -159,6 +159,7 @@ public final class Encoder implements Visitor {
     return null;
   }
 
+
   // Expressions
   @Override
   public Object visitArrayExpression(ArrayExpression ast, Object o) {
@@ -188,14 +189,13 @@ public final class Encoder implements Visitor {
   }
 
   @Override
-  public Object visitCharacterExpression(CharacterExpression ast,
-						Object o) {
+  public Object visitCharacterExpression(CharacterExpression ast, Object o) {
     Frame frame = (Frame) o;
     Integer valSize = (Integer) ast.type.visit(this, null);
     emit(Machine.LOADLop, 0, 0, ast.CL.spelling.charAt(1));
     return valSize;
   }
-
+  //@TODO: Here's the visitEmptyExpression Method
   @Override
   public Object visitEmptyExpression(EmptyExpression ast, Object o) {
     return 0;
@@ -268,8 +268,7 @@ public final class Encoder implements Visitor {
   // <editor-fold defaultstate="collapsed" desc="Declarations">
   
   @Override
-  public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast,
-					       Object o){
+  public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object o){
     return 0;
   }
 
@@ -359,8 +358,7 @@ public final class Encoder implements Visitor {
   }
 
   @Override
-  public Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast,
-					      Object o) {
+  public Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast, Object o) {
     return 0;
   }
 
@@ -379,7 +377,12 @@ public final class Encoder implements Visitor {
   //@TODO Implement
   @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    Frame frame = (Frame) o;
+    int extraSize = ((Integer) ast.E.visit(this, frame));
+    ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
+
+    writeTableDetails(ast);
+    return extraSize;
   }
 
   //@todo implement
