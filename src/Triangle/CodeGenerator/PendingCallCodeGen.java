@@ -3,22 +3,14 @@ package Triangle.CodeGenerator;
 import Triangle.AbstractSyntaxTrees.Identifier;
 
 public class PendingCallCodeGen {
-    private Frame frame;
     private Identifier identifier;
+    private int frameLevel;
     private int instrAddress;
 
-    public PendingCallCodeGen(Frame frame, Identifier identifier, int instrAddress) {
-        this.frame = frame;
+    public PendingCallCodeGen(Identifier identifier, int frameLevel, int instrAddress) {
         this.identifier = identifier;
+        this.frameLevel = frameLevel;
         this.instrAddress = instrAddress;
-    }
-
-    public Frame getFrame() {
-        return frame;
-    }
-
-    public void setFrame(Frame frame) {
-        this.frame = frame;
     }
 
     public Identifier getIdentifier() {
@@ -27,6 +19,14 @@ public class PendingCallCodeGen {
 
     public void setIdentifier(Identifier identifier) {
         this.identifier = identifier;
+    }
+
+    public int getFrameLevel() {
+        return frameLevel;
+    }
+
+    public void setFrameLevel(int frameLevel) {
+        this.frameLevel = frameLevel;
     }
 
     public int getInstrAddress() {

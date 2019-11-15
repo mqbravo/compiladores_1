@@ -302,14 +302,18 @@ public final class Encoder implements Visitor {
       reporter.reportRestriction("can't nest routines so deeply");
     else {
 
+      //Check if there are any pending calls referring to this proc-decl
       ArrayList<PendingCallCodeGen> visited = new ArrayList<>();
       for(PendingCallCodeGen p : pendingCalls) {
-        //TODO Revisar cual es el criterio para determinar a cual se refiere
+        //If this procedure declaration is the one referred in the call's identifier
         if(ast == p.getIdentifier().decl){
           ObjectAddress address = ((KnownRoutine)ast.entity).address;
-          patchD(p.getInstrAddress(), address.displacement);
-          patchR(p.getInstrAddress(), displayRegister(p.getFrame().level, address.level));
 
+          //Patch the call's instruction
+          patchD(p.getInstrAddress(), address.displacement);
+          patchR(p.getInstrAddress(), displayRegister(p.getFrameLevel(), address.level));
+
+          //Mark as visited
           visited.add(p);
         }
       }
@@ -684,19 +688,13 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitIdentifier(Identifier ast, Object o) {
-    Frame frame;
-
-    if(o instanceof PendingCallCodeGen)
-      frame = ((PendingCallCodeGen)o).getFrame();
-
-    else
-      frame = (Frame)o;
+    Frame frame = (Frame)o;
 
 
     //Declaration is null, it hasn't been visited yet
     if(ast.decl.entity == null){
-      //TODO Add to pending calls. Need to store: frame, I ast
-      pendingCalls.add(new PendingCallCodeGen(frame, ast, nextInstrAddr));
+      //TODO Add to pending calls. Need to store: frame's level, I ast
+      pendingCalls.add(new PendingCallCodeGen(ast, frame.level, nextInstrAddr));
       emit(Machine.CALLop, 0, Machine.CBr, 0); //Emit the instruction, but needs to be patched later
     }
 
