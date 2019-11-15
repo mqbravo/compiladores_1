@@ -285,7 +285,9 @@ public class TableVisitor implements Visitor {
 
     //@ TODO: IMPLEMENT
     public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ast.D.visit(this, null);
+
+        return null;
     }
 
     @Override
