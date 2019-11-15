@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import TAM.Instruction;
 import TAM.Machine;
 import Triangle.AbstractSyntaxTrees.*;
+import Triangle.ContextualAnalyzer.PendingCall;
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
 
@@ -264,6 +265,7 @@ public final class Encoder implements Visitor {
     return extraSize;
   }
 
+  //TODO Hacer lo mismo que los procs
   @Override
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
     Frame frame = (Frame) o;
@@ -300,18 +302,19 @@ public final class Encoder implements Visitor {
       reporter.reportRestriction("can't nest routines so deeply");
     else {
 
-      ArrayList<PendingCallCodeGen> pending = new ArrayList<>();
-      for(PendingCallCodeGen p : pendingCalls)
-        if(ast.I.equals(p.getIdentifier())){
-          ObjectAddress address = ((KnownRoutine) ast.entity).address;
-          if(address.level < p.getFrame().level) {
-            patchD(p.getInstrAddress(), address.displacement);
-            patchR(p.getInstrAddress(), displayRegister(p.getFrame().level, address.level));
-            pending.add(p);
-          }
-        }
+      ArrayList<PendingCallCodeGen> visited = new ArrayList<>();
+      for(PendingCallCodeGen p : pendingCalls) {
+        //TODO Revisar cual es el criterio para determinar a cual se refiere
+        if(ast == p.getIdentifier().decl){
+          ObjectAddress address = ((KnownRoutine)ast.entity).address;
+          patchD(p.getInstrAddress(), address.displacement);
+          patchR(p.getInstrAddress(), displayRegister(p.getFrame().level, address.level));
 
-      pendingCalls.removeAll(pending);
+          visited.add(p);
+        }
+      }
+
+      pendingCalls.removeAll(visited);
 
       Frame frame1 = new Frame(frame.level + 1, 0);
       argsSize = ((Integer) ast.FPS.visit(this, frame1));
@@ -681,9 +684,17 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitIdentifier(Identifier ast, Object o) {
-    Frame frame = (Frame) o;
+    Frame frame;
+
+    if(o instanceof PendingCallCodeGen)
+      frame = ((PendingCallCodeGen)o).getFrame();
+
+    else
+      frame = (Frame)o;
+
+
     //Declaration is null, it hasn't been visited yet
-    if(ast.decl == null){
+    if(ast.decl.entity == null){
       //TODO Add to pending calls. Need to store: frame, I ast
       pendingCalls.add(new PendingCallCodeGen(frame, ast, nextInstrAddr));
       emit(Machine.CALLop, 0, Machine.CBr, 0); //Emit the instruction, but needs to be patched later
