@@ -87,46 +87,75 @@ public final class Encoder implements Visitor {
   //@TODO: Implement
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-//    Frame frame = (Frame) o;
-//    int jumpAddr, loopAddr;
-//
-//    jumpAddr = nextInstrAddr;
-//    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-//    loopAddr = nextInstrAddr;
-//    ast.C.visit(this, frame);
-//    patch(jumpAddr, nextInstrAddr);
-//    ast.E.visit(this, frame);
-//    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-//    return null;
+      Frame frame = (Frame) o;
+      int jumpAddr, loopAddr;
+      ast.IdenExpression.visit(this, frame);
+      emit(Machine.STOREop, 1, Machine.SBr, 0);
+      jumpAddr = nextInstrAddr;
+      emit(Machine.JUMPop, 0, Machine.CBr, 0);
+      loopAddr = nextInstrAddr;
+      emit(Machine.LOADop, 1, Machine.SBr, 0);
+      emit(Machine.LOADLop, 1, Machine.STr, 1);
+      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+      emit(Machine.STOREop, 1, Machine.SBr, 0);
+      emit(Machine.LOADop, 1, Machine.SBr, 0);
+      ast.C.visit(this, frame);
+      patch(jumpAddr, nextInstrAddr);
+      emit(Machine.LOADop, 1, Machine.SBr, 0);
+      ast.E.visit(this, frame);
+      emit(Machine.CALLop, 0, Machine.PBr, Machine.ltDisplacement);
+      emit(Machine.JUMPIFop, 1, Machine.CBr, loopAddr);
       return null;
   }
 
   @Override
   public Object visitWhileLoopCommand(LoopCommand ast, Object o) {
-    ast.E.visit(this,null);
-    ast.C.visit(this,null);
-    return null;
+      Frame frame = (Frame) o;
+      int jumpAddr, loopAddr;
+      jumpAddr = nextInstrAddr;
+      emit(Machine.JUMPop, 0, Machine.CBr, 0);
+      loopAddr = nextInstrAddr;
+      ast.C.visit(this, frame);
+      patch(jumpAddr, nextInstrAddr);
+      ast.E.visit(this, frame);
+      emit(Machine.JUMPIFop, 1, Machine.CBr, loopAddr);
+      return null;
   }
 
   @Override
   public Object visitDoWhileLoopCommand(LoopCommand ast, Object o) {
-    ast.C.visit(this,null);
-    ast.E.visit(this,null);
+    Frame frame = (Frame) o;
+    int loopAddr;
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, 1, Machine.CBr, loopAddr);
     return null;
   }
 
 
   @Override
   public Object visitUntilLoopCommand(LoopCommand ast, Object o) {
-    ast.E.visit(this,null);
-    ast.C.visit(this,null);
+    Frame frame = (Frame) o;
+    int jumpAddr, loopAddr;
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    patch(jumpAddr, nextInstrAddr);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, 0, Machine.CBr, loopAddr);
     return null;
   }
 
   @Override
   public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
-    ast.C.visit(this,null);
-    ast.E.visit(this,null);
+    Frame frame = (Frame) o;
+    int loopAddr;
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, 0, Machine.CBr, loopAddr);
     return null;
   }
 
