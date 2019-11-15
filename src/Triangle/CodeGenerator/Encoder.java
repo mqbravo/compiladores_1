@@ -18,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import TAM.Instruction;
 import TAM.Machine;
@@ -26,6 +27,8 @@ import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
 
 public final class Encoder implements Visitor {
+
+  private ArrayList<PendingCallCodeGen> pendingCalls = new ArrayList<>();
 
   // <editor-fold defaultstate="collapsed" desc="Commands">
 
@@ -296,11 +299,27 @@ public final class Encoder implements Visitor {
     if (frame.level == Machine.maxRoutineLevel)
       reporter.reportRestriction("can't nest routines so deeply");
     else {
+
+      ArrayList<PendingCallCodeGen> pending = new ArrayList<>();
+      for(PendingCallCodeGen p : pendingCalls)
+        if(ast.I.equals(p.getIdentifier())){
+          ObjectAddress address = ((KnownRoutine) ast.entity).address;
+          if(address.level < p.getFrame().level) {
+            patchD(p.getInstrAddress(), address.displacement);
+            patchR(p.getInstrAddress(), displayRegister(p.getFrame().level, address.level));
+            pending.add(p);
+          }
+        }
+
+      pendingCalls.removeAll(pending);
+
       Frame frame1 = new Frame(frame.level + 1, 0);
       argsSize = ((Integer) ast.FPS.visit(this, frame1));
       Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
       ast.C.visit(this, frame2);
     }
+
+
     emit(Machine.RETURNop, 0, 0, argsSize);
     patchD(jumpAddr, nextInstrAddr);
     return 0;
@@ -666,6 +685,7 @@ public final class Encoder implements Visitor {
     //Declaration is null, it hasn't been visited yet
     if(ast.decl == null){
       //TODO Add to pending calls. Need to store: frame, I ast
+      pendingCalls.add(new PendingCallCodeGen(frame, ast, nextInstrAddr));
       emit(Machine.CALLop, 0, Machine.CBr, 0); //Emit the instruction, but needs to be patched later
     }
 
