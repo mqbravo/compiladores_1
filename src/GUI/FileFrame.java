@@ -4,18 +4,18 @@
  */
 
 package GUI;
-import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseListener;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
+
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.event.InternalFrameListener;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.Document;
 import javax.swing.text.Element;
+import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -315,7 +315,11 @@ public class FileFrame extends javax.swing.JInternalFrame {
         sourceScroll.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         sourceScroll.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         sourceScroll.setName("sourceScroll");
-        sourcePane.setFont(new java.awt.Font("Courier New", 0, 12));
+        sourcePane.setFont(new java.awt.Font(Font.MONOSPACED, Font.PLAIN, 16));
+        Document doc = sourcePane.getDocument();
+        if (doc instanceof PlainDocument) {
+            doc.putProperty(PlainDocument.tabSizeAttribute, 4);
+        }
         sourceScroll.setViewportView(sourcePane);
 
         sourcePanel.add(sourceScroll);
