@@ -9,7 +9,7 @@ package Triangle.CodeGenerator;
  *
  * @author Esteban
  */
-public class KnownAddressWithValue extends RuntimeEntity{
+public class KnownAddressWithValue extends KnownAddress{
 
   public KnownAddressWithValue(){
     super();
@@ -17,12 +17,10 @@ public class KnownAddressWithValue extends RuntimeEntity{
   }
   
   public KnownAddressWithValue (int size, int level, int displacement, int value) {
-    super(size);
-    address = new ObjectAddress(level, displacement);
+    super(size, level, displacement);
     this.value = value;
   }
-
-  public ObjectAddress address;
+  
   public int value;
   
 }
