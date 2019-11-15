@@ -937,7 +937,7 @@ public final class Checker implements Visitor {
     IdentificationTable currentIdTable = this.idTable;
 
     pendingCalls.stream().map((pC) -> {
-      Declaration procDecl = (Declaration) I.visit(this, null);
+      Declaration procDecl = (Declaration) pC.getProcFuncIdentifier().visit(this, null);
       this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
       pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
       return pC;
