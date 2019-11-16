@@ -301,25 +301,6 @@ public final class Encoder implements Visitor {
     if (frame.level == Machine.maxRoutineLevel)
       reporter.reportRestriction("can't nest routines so deeply");
     else {
-
-      //Check if there are any pending calls referring to this proc-decl
-      ArrayList<PendingCallCodeGen> visited = new ArrayList<>();
-      for(PendingCallCodeGen p : pendingCalls) {
-        //If this procedure declaration is the one referred in the call's identifier
-        if(ast == p.getIdentifier().decl){
-          ObjectAddress address = ((KnownRoutine)ast.entity).address;
-
-          //Patch the call's instruction
-          patchD(p.getInstrAddress(), address.displacement);
-          patchR(p.getInstrAddress(), displayRegister(p.getFrameLevel(), address.level));
-
-          //Mark as visited
-          visited.add(p);
-        }
-      }
-
-      pendingCalls.removeAll(visited);
-
       Frame frame1 = new Frame(frame.level + 1, 0);
       argsSize = ((Integer) ast.FPS.visit(this, frame1));
       Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
@@ -378,7 +359,14 @@ public final class Encoder implements Visitor {
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
     Frame frame = (Frame) o;
-    int extraSize =(Integer)ast.D.visit(this, frame);
+
+    int currentInstrAddress = nextInstrAddr;
+
+    ast.D.visit(this, frame);
+
+    nextInstrAddr = currentInstrAddress;
+
+    Integer extraSize = (Integer) ast.D.visit(this, frame);
 
     return extraSize;
   }
