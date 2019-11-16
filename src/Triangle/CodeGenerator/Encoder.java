@@ -18,18 +18,14 @@ import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import TAM.Instruction;
 import TAM.Machine;
 import Triangle.AbstractSyntaxTrees.*;
-import Triangle.ContextualAnalyzer.PendingCall;
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
 
 public final class Encoder implements Visitor {
-
-  private ArrayList<PendingCallCodeGen> pendingCalls = new ArrayList<>();
 
   // <editor-fold defaultstate="collapsed" desc="Commands">
 
@@ -355,17 +351,20 @@ public final class Encoder implements Visitor {
     throw new UnsupportedOperationException("Not implemented yet.");
   }
 
-  //@todo implement
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
     Frame frame = (Frame) o;
 
+    //Store the instruction address at the start of the encoding of the recursive decl.
     int currentInstrAddress = nextInstrAddr;
 
+    //First pass. This pass sets the declarations entrance addresses and emits instruction placeholders for future calls
     ast.D.visit(this, frame);
 
+    //Reset the instruction address to start the second pass
     nextInstrAddr = currentInstrAddress;
 
+    //Second pass. Emits the actual instructions by replacing the placeholders
     Integer extraSize = (Integer) ast.D.visit(this, frame);
 
     return extraSize;
@@ -680,11 +679,10 @@ public final class Encoder implements Visitor {
 
 
     //Declaration is null, it hasn't been visited yet
-    if(ast.decl.entity == null){
-      //TODO Add to pending calls. Need to store: frame's level, I ast
-      pendingCalls.add(new PendingCallCodeGen(ast, frame.level, nextInstrAddr));
+    if(ast.decl.entity == null)
+      //Add to pending calls. Need to store: frame's level, I ast
       emit(Machine.CALLop, 0, Machine.CBr, 0); //Emit the instruction, but needs to be patched later
-    }
+
 
     else if (ast.decl.entity instanceof KnownRoutine) {
       ObjectAddress address = ((KnownRoutine) ast.decl.entity).address;
