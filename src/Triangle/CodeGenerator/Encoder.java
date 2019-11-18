@@ -348,7 +348,32 @@ public final class Encoder implements Visitor {
   //@TODO Implement
   @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    Frame frame = (Frame) o;
+    
+    // Visiting the expression will allow me to know how much space it needs
+    // And leaves it on top of the stack
+    int extraSize = (Integer) ast.E.visit(this, frame);
+
+    if (ast.E instanceof CharacterExpression) {
+      CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
+      ast.entity = new KnownAddressWithValue(Machine.addressSize,
+              frame.level,
+              frame.size,
+              characterValuation(CL.spelling)
+      );
+      
+    } else if (ast.E instanceof IntegerExpression) {
+      IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
+      ast.entity = new KnownAddressWithValue(Machine.addressSize,
+              frame.level,
+              frame.size,
+              Integer.parseInt(IL.spelling)
+      );
+    } else {
+      ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
+    }
+    writeTableDetails(ast);
+    return extraSize;
   }
 
   @Override
@@ -370,13 +395,15 @@ public final class Encoder implements Visitor {
     return extraSize;
   }
 
-  //@todo implement
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
     Frame frame = (Frame) o;
-    int extraSize  = ((Integer) ast.dAST1.visit(this, frame));
-        extraSize += ((Integer) ast.dAST2.visit(this, frame));
-    return extraSize;
+    int extraSize1, extraSize2;
+
+    extraSize1 = ((Integer) ast.dAST1.visit(this, frame));
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.dAST2.visit(this, frame1));
+    return extraSize1 + extraSize2;
   }
 
   // </editor-fold>
@@ -981,7 +1008,7 @@ public final class Encoder implements Visitor {
       reporter.reportRestriction("can't store values larger than 255 words");
       valSize = 255; // to allow code generation to continue
     }
-    if (baseObject instanceof KnownAddress) {
+    if (baseObject instanceof KnownAddress || baseObject instanceof KnownAddressWithValue) {
       ObjectAddress address = ((KnownAddress) baseObject).address;
       if (V.indexed) {
         emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
