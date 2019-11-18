@@ -228,6 +228,15 @@ public final class Checker implements Visitor {
     } else if (binding instanceof FuncDeclaration) {
       ast.APS.visit(this, ((FuncDeclaration) binding).FPS);
       ast.type = ((FuncDeclaration) binding).T;
+
+      for (FutureCallExpression fCE : idTable.futureCallExpressions){
+        if(fCE.getE() == ast){
+          if (!fCE.getTypeDenoterToCheck().equals(ast.type))
+            reporter.reportError ("body of function \"%\" has wrong type",
+                    ast.I.spelling, ast.position);
+        }
+      }
+
     } else if (binding instanceof FuncFormalParameter) {
       ast.APS.visit(this, ((FuncFormalParameter) binding).FPS);
       ast.type = ((FuncFormalParameter) binding).T;
@@ -347,7 +356,14 @@ public final class Checker implements Visitor {
 
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     idTable.closeScope();
-    if (! ast.T.equals(eType))
+
+    //We don't know the type of the future call yet
+    if(eType == null) {
+      idTable.addFutureCallExp(new FutureCallExpression(ast.T, ast.E));
+      return null;
+    }
+
+    else if (! ast.T.equals(eType))
       reporter.reportError ("body of function \"%\" has wrong type",
                             ast.I.spelling, ast.E.position);
     return null;
@@ -937,9 +953,9 @@ public final class Checker implements Visitor {
     IdentificationTable currentIdTable = this.idTable;
 
     pendingCalls.stream().map((pC) -> {
-      Declaration procDecl = (Declaration) I.visit(this, null);
+      Declaration procFuncDecl = (Declaration) pC.getProcFuncIdentifier().visit(this, null);
       this.idTable = pC.getCallContextIdTable(); //Sets the Id Table as how it was in the moment of the call
-      pC.visitPendingCall(this, procDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
+      pC.visitPendingCall(this, procFuncDecl); //Visit each of them. Pass the visit of the proc to bind it to the call
       return pC;
     }).forEachOrdered((_item) -> {
       this.idTable = currentIdTable; //Sets the id table back

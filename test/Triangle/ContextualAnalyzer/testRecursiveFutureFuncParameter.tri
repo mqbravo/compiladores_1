@@ -3,12 +3,12 @@ let
 		func P(func A(numero: Integer): Integer): Integer~
 			A(1)
 	and
-		func Q(i: Integer): Integer~
+		func addOne(i: Integer): Integer~
 			i+1
 	and
-		func Q(i2: Integer): Integer ~
-			i + 1
+		func subOne(i: Integer): Integer ~
+			i - 1
 	end
 in
-	putint(P(func Q))
+	putint(P(func addOne))
 end

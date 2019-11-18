@@ -325,12 +325,12 @@ public class TableVisitor implements Visitor {
       return(null);
   }
 
-  //@ TODO: IMPLEMENT
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      ast.D.visit(this, null);
+      return null;
   }
-
+  
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
       ast.dAST1.visit(this, null);

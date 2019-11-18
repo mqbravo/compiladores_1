@@ -15,6 +15,7 @@
 package Triangle.ContextualAnalyzer;
 
 import Triangle.AbstractSyntaxTrees.Declaration;
+import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.Identifier;
 
 import java.util.ArrayList;
@@ -26,16 +27,19 @@ public final class IdentificationTable {
   private int recLevel;
   private IdEntry latest;
   public ArrayList<PendingCall> pendingCalls;
+  public ArrayList<FutureCallExpression> futureCallExpressions;
 
   public IdentificationTable () {
     level = localLevel = recLevel = 0;
     latest = null;
     pendingCalls = new ArrayList<>();
+    futureCallExpressions = new ArrayList<>();
   }
 
   public IdentificationTable(IdentificationTable oldIdTable){
     this.level = oldIdTable.level;
     this.latest = oldIdTable.latest;
+    this.futureCallExpressions = oldIdTable.futureCallExpressions;
     //this.recLevel = oldIdTable.recLevel;
     //this.pendingCalls = oldIdTable.pendingCalls;
   }
@@ -192,6 +196,10 @@ public final class IdentificationTable {
 
   public void addPendingCall(PendingCall pendingCall){
     pendingCalls.add(pendingCall);
+  }
+
+  public void addFutureCallExp(FutureCallExpression ast){
+    this.futureCallExpressions.add(ast);
   }
 
   public ArrayList<PendingCall> checkPendingCalls(Identifier pfId){
