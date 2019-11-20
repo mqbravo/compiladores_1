@@ -61,9 +61,9 @@ public final class Encoder implements Visitor {
     ast.C1.visit(this, frame);
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patch(jumpifAddr, nextInstrAddr);
+    patchD(jumpifAddr, nextInstrAddr);
     ast.C2.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return null;
   }
 
@@ -217,9 +217,9 @@ public final class Encoder implements Visitor {
     //valSize = (Integer) ast.E2.visit(this, frame);
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patch(jumpifAddr, nextInstrAddr);
+    patchD(jumpifAddr, nextInstrAddr);
     valSize = (Integer) ast.E3.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return valSize;
   }
 
@@ -297,6 +297,7 @@ public final class Encoder implements Visitor {
     return extraSize;
   }
 
+  //TODO Hacer lo mismo que los procs
   @Override
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
     Frame frame = (Frame) o;
@@ -315,7 +316,7 @@ public final class Encoder implements Visitor {
       valSize = ((Integer) ast.E.visit(this, frame2));
     }
     emit(Machine.RETURNop, valSize, 0, argsSize);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return 0;
   }
 
@@ -337,8 +338,10 @@ public final class Encoder implements Visitor {
       Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
       ast.C.visit(this, frame2);
     }
+
+
     emit(Machine.RETURNop, 0, 0, argsSize);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return 0;
   }
 
@@ -381,26 +384,63 @@ public final class Encoder implements Visitor {
   @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
     Frame frame = (Frame) o;
-    int extraSize = ((Integer) ast.E.visit(this, frame));
-    ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
+    
+    // Visiting the expression will allow me to know how much space it needs
+    // And leaves it on top of the stack
+    int extraSize = (Integer) ast.E.visit(this, frame);
 
+    if (ast.E instanceof CharacterExpression) {
+      CharacterLiteral CL = ((CharacterExpression) ast.E).CL;
+      ast.entity = new KnownAddressWithValue(Machine.addressSize,
+              frame.level,
+              frame.size,
+              characterValuation(CL.spelling)
+      );
+      
+    } else if (ast.E instanceof IntegerExpression) {
+      IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
+      ast.entity = new KnownAddressWithValue(Machine.addressSize,
+              frame.level,
+              frame.size,
+              Integer.parseInt(IL.spelling)
+      );
+    } else {
+      ast.entity = new KnownAddress(extraSize, frame.level, frame.size);
+    }
     writeTableDetails(ast);
     return extraSize;
   }
 
-  //@todo implement
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-    throw new UnsupportedOperationException("Not implemented yet.");
+    Frame frame = (Frame) o;
+
+    //Store the instruction address at the start of the encoding of the recursive decl.
+    int currentInstrAddress = nextInstrAddr;
+
+    //First pass. This pass sets the declarations entrance addresses and emits instruction placeholders for future calls
+    ast.D.visit(this, frame);
+
+    //Reset the instruction address to start the second pass
+    nextInstrAddr = currentInstrAddress;
+
+    //Second pass. Emits the actual instructions by replacing the placeholders
+    Integer extraSize = (Integer) ast.D.visit(this, frame);
+
+    return extraSize;
   }
 
-  //@todo implement
   @Override
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
     Frame frame = (Frame) o;
-    int extraSize  = ((Integer) ast.dAST1.visit(this, frame));
-    extraSize += ((Integer) ast.dAST2.visit(this, frame));
-    return extraSize;
+
+    int extraSize1, extraSize2;
+
+    extraSize1 = ((Integer) ast.dAST1.visit(this, frame));
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.dAST2.visit(this, frame1));
+    return extraSize1 + extraSize2;
+
   }
 
   // </editor-fold>
@@ -699,8 +739,16 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitIdentifier(Identifier ast, Object o) {
-    Frame frame = (Frame) o;
-    if (ast.decl.entity instanceof KnownRoutine) {
+    Frame frame = (Frame)o;
+
+
+    //Declaration is null, it hasn't been visited yet
+    if(ast.decl.entity == null)
+      //Add to pending calls. Need to store: frame's level, I ast
+      emit(Machine.CALLop, 0, Machine.CBr, 0); //Emit the instruction, but needs to be patched later
+
+
+    else if (ast.decl.entity instanceof KnownRoutine) {
       ObjectAddress address = ((KnownRoutine) ast.decl.entity).address;
       emit(Machine.CALLop, displayRegister(frame.level, address.level),
               Machine.CBr, address.displacement);
@@ -950,8 +998,13 @@ public final class Encoder implements Visitor {
   }
 
   // Patches the d-field of the instruction at address addr.
-  private void patch (int addr, int d) {
+  private void patchD (int addr, int d) {
     Machine.code[addr].d = d;
+  }
+
+  // Patches the r-field of the instruction at address addr.
+  private void patchR (int addr, int r) {
+    Machine.code[addr].r = r;
   }
 
   // DATA REPRESENTATION
@@ -992,7 +1045,7 @@ public final class Encoder implements Visitor {
       reporter.reportRestriction("can't store values larger than 255 words");
       valSize = 255; // to allow code generation to continue
     }
-    if (baseObject instanceof KnownAddress) {
+    if (baseObject instanceof KnownAddress || baseObject instanceof KnownAddressWithValue) {
       ObjectAddress address = ((KnownAddress) baseObject).address;
       if (V.indexed) {
         emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
