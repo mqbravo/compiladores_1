@@ -585,6 +585,12 @@ public final class Checker implements Visitor {
     FormalParameter fp = (FormalParameter) o;
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
 
+    //We don't know the type of the future call yet
+    if(eType == null) {
+      idTable.addFutureCallExp(new FutureCallExpression( ((ConstFormalParameter)fp).T, ast.E));
+      return null;
+    }
+
     if (! (fp instanceof ConstFormalParameter))
       reporter.reportError ("const actual parameter not expected here", "",
                             ast.position);
