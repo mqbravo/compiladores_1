@@ -88,26 +88,25 @@ public final class Encoder implements Visitor {
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
     Frame frame = (Frame) o;
     int jumpAddr, loopAddr;
-    ast.IdenExpression.visit(this, frame);
-    emit(Machine.STOREop, 1, Machine.SBr, 0);
+    ast.IdenExpression.visit(this, frame);//Evaluation of the Identifier Expression
+    emit(Machine.STOREop, 1, Machine.SBr, 0);//Bind between the identifier and the expression
     jumpAddr = nextInstrAddr;
-    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);//Unconditional (and incomplete) JUMP
     loopAddr = nextInstrAddr;
-
-    ast.C.visit(this, frame);
+    ast.C.visit(this, frame);//Command
 
     emit(Machine.LOADop, 1, Machine.SBr, 0);
     emit(Machine.LOADLop, 1, Machine.STr, 1);
-    emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
-    emit(Machine.STOREop, 1, Machine.SBr, 0);
+    emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);//Increase value of identifier by 1
+    emit(Machine.STOREop, 1, Machine.SBr, 0);//Update value on the identifier
 
-    patch(jumpAddr, nextInstrAddr);
+    patch(jumpAddr, nextInstrAddr);//Incomplete jump patch
 
     emit(Machine.LOADop, 1, Machine.SBr, 0);
     emit(Machine.LOADop, 1, Machine.SBr, 0);
-    ast.E.visit(this, frame);
-    emit(Machine.CALLop, 0, Machine.PBr, Machine.ltDisplacement);
-    emit(Machine.JUMPIFop, 1, Machine.CBr, loopAddr);
+    ast.E.visit(this, frame);//LOAD integer expression value
+    emit(Machine.CALLop, 0, Machine.PBr, Machine.ltDisplacement);//call "lower or equal than" operation
+    emit(Machine.JUMPIFop, 1, Machine.CBr, loopAddr);//Conditional jump
     return null;
   }
 
