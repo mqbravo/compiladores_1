@@ -105,7 +105,7 @@ public final class Encoder implements Visitor {
     emit(Machine.LOADop, 1, Machine.SBr, 0);
     emit(Machine.LOADop, 1, Machine.SBr, 0);
     ast.E.visit(this, frame);//LOAD integer expression value
-    emit(Machine.CALLop, 0, Machine.PBr, Machine.ltDisplacement);//call "lower or equal than" operation
+    emit(Machine.CALLop, 0, Machine.PBr, Machine.leDisplacement);//call "lower or equal than" operation
     emit(Machine.JUMPIFop, 1, Machine.CBr, loopAddr);//Conditional jump
     return null;
   }
