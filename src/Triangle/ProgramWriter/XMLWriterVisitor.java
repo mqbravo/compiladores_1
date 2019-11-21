@@ -132,7 +132,6 @@ public class XMLWriterVisitor implements Visitor {
     public Object visitArrayExpression(ArrayExpression ast, Object o) {
       writeToXMLFile("<ArrayExpression>\n");
         ast.AA.visit(this, null);
-        ast.type.visit(this, null);
       writeToXMLFile("</ArrayExpression>\n");
       return null;
     }
