@@ -61,9 +61,9 @@ public final class Encoder implements Visitor {
     ast.C1.visit(this, frame);
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patchD(jumpifAddr, nextInstrAddr);
+    patch(jumpifAddr, nextInstrAddr);
     ast.C2.visit(this, frame);
-    patchD(jumpAddr, nextInstrAddr);
+    patch(jumpAddr, nextInstrAddr);
     return null;
   }
 
@@ -217,9 +217,9 @@ public final class Encoder implements Visitor {
     //valSize = (Integer) ast.E2.visit(this, frame);
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patchD(jumpifAddr, nextInstrAddr);
+    patch(jumpifAddr, nextInstrAddr);
     valSize = (Integer) ast.E3.visit(this, frame);
-    patchD(jumpAddr, nextInstrAddr);
+    patch(jumpAddr, nextInstrAddr);
     return valSize;
   }
 
@@ -316,7 +316,7 @@ public final class Encoder implements Visitor {
       valSize = ((Integer) ast.E.visit(this, frame2));
     }
     emit(Machine.RETURNop, valSize, 0, argsSize);
-    patchD(jumpAddr, nextInstrAddr);
+    patch(jumpAddr, nextInstrAddr);
     return 0;
   }
 
@@ -341,7 +341,7 @@ public final class Encoder implements Visitor {
 
 
     emit(Machine.RETURNop, 0, 0, argsSize);
-    patchD(jumpAddr, nextInstrAddr);
+    patch(jumpAddr, nextInstrAddr);
     return 0;
   }
 
@@ -384,7 +384,7 @@ public final class Encoder implements Visitor {
   @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
     Frame frame = (Frame) o;
-    
+
     // Visiting the expression will allow me to know how much space it needs
     // And leaves it on top of the stack
     int extraSize = (Integer) ast.E.visit(this, frame);
@@ -396,7 +396,7 @@ public final class Encoder implements Visitor {
               frame.size,
               characterValuation(CL.spelling)
       );
-      
+
     } else if (ast.E instanceof IntegerExpression) {
       IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
       ast.entity = new KnownAddressWithValue(Machine.addressSize,
@@ -998,13 +998,8 @@ public final class Encoder implements Visitor {
   }
 
   // Patches the d-field of the instruction at address addr.
-  private void patchD (int addr, int d) {
+  private void patch (int addr, int d) {
     Machine.code[addr].d = d;
-  }
-
-  // Patches the r-field of the instruction at address addr.
-  private void patchR (int addr, int r) {
-    Machine.code[addr].r = r;
   }
 
   // DATA REPRESENTATION
