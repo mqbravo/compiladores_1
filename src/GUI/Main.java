@@ -157,6 +157,7 @@ public class Main extends javax.swing.JFrame {
     }
     // </editor-fold>
     
+    @SuppressWarnings("deprecation")
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         this.setBackground(Color.DARK_GRAY);
