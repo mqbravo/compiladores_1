@@ -15,6 +15,7 @@
 package Triangle.ContextualAnalyzer;
 
 import Triangle.AbstractSyntaxTrees.Declaration;
+import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.Identifier;
 
 import java.util.ArrayList;
@@ -22,20 +23,22 @@ import java.util.ArrayList;
 public final class IdentificationTable {
 
   private int level;
-  private int localLevel;
   private int recLevel;
   private IdEntry latest;
   public ArrayList<PendingCall> pendingCalls;
+  public ArrayList<FutureCallExpression> futureCallExpressions;
 
   public IdentificationTable () {
-    level = localLevel = recLevel = 0;
+    level = recLevel = 0;
     latest = null;
     pendingCalls = new ArrayList<>();
+    futureCallExpressions = new ArrayList<>();
   }
 
   public IdentificationTable(IdentificationTable oldIdTable){
     this.level = oldIdTable.level;
     this.latest = oldIdTable.latest;
+    this.futureCallExpressions = oldIdTable.futureCallExpressions;
     //this.recLevel = oldIdTable.recLevel;
     //this.pendingCalls = oldIdTable.pendingCalls;
   }
@@ -84,18 +87,6 @@ public final class IdentificationTable {
        } else
        entry = entry.previous;
     }
-    
-    if (localLevel > 0) {
-      // I need to do a greater search, search the previously defined levels:
-      while (entry != null && entry.level >= this.level-2) {
-        if (entry.id.equals(id)) {
-          //Repeteated, and marked as such
-          present = true;
-          break;//My job is done
-        }
-        entry = entry.previous;
-      }
-    }
 
     attr.duplicated = present;
     // Add new entry ...
@@ -129,11 +120,6 @@ public final class IdentificationTable {
 
     return attr;
   }
-
-  public void openLocalScope(){
-    this.localLevel++;
-    this.level++;
-  }
   
   /**
    * This method is used to collapse the current scope on the previous scope
@@ -163,7 +149,6 @@ public final class IdentificationTable {
     
     //And submit the changes in the scope level
     this.level = level-2;
-    this.localLevel--;
   }
 
   public void openRecursiveScope(){
@@ -192,6 +177,10 @@ public final class IdentificationTable {
 
   public void addPendingCall(PendingCall pendingCall){
     pendingCalls.add(pendingCall);
+  }
+
+  public void addFutureCallExp(FutureCallExpression ast){
+    this.futureCallExpressions.add(ast);
   }
 
   public ArrayList<PendingCall> checkPendingCalls(Identifier pfId){
