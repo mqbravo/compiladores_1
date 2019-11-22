@@ -81,6 +81,6 @@ public class OutputRedirector extends ByteArrayOutputStream {
     
     // <editor-fold defaultstate="collapsed" desc=" Attributes ">
     private ActionListener delegate;                    // Event to be triggered
-    private LinkedList dataQueue = new LinkedList();    // Queue with the data ro read
+    private LinkedList <String> dataQueue = new LinkedList<>();// Queue with the data to read
     // </editor-fold>
 }

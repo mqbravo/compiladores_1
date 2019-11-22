@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.2" maxVersion="1.2" type="org.netbeans.modules.form.forminfo.JInternalFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JInternalFrameFormInfo">
   <Properties>
     <Property name="closable" type="boolean" value="true"/>
     <Property name="iconifiable" type="boolean" value="true"/>
@@ -66,9 +66,12 @@
                 <Component class="javax.swing.JEditorPane" name="sourcePane">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Courier New" size="12" style="0"/>
+                      <Font name="Monospaced" size="16" style="0"/>
                     </Property>
                   </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Document d = sourcePane.getDocument();&#xa;if (d instanceof PlainDocument){&#xa;  d.putProperty(PlainDocument.tabSizeAttribute, 4);&#xa;}"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
