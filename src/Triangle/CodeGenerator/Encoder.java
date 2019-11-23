@@ -98,11 +98,11 @@ public final class Encoder implements Visitor {
     emit(Machine.JUMPop, 0, Machine.SBr, 0);
     loopAddr = nextInstrAddr;
     emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
+    ast.C.visit(this, frame);//Command
+    emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
     emit(Machine.LOADLop, 1, displayRegister(frame.level, address.level), 1);
     emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);//Increase value of identifier by 1
     emit(Machine.STOREop, 1, displayRegister(frame.level, address.level), address.displacement);//Update value on the identifier
-    emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
-    ast.C.visit(this, frame);//Command
     patch(jumpAddr, nextInstrAddr);//Incomplete jump patch
     emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
     ast.E.visit(this, frame);//LOAD integer expression value
