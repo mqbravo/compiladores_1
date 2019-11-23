@@ -86,22 +86,25 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-    emit(Machine.PUSHop, 0, 0, 1);
     Frame frame = (Frame) o;
     int jumpAddr, loopAddr;
+    emit(Machine.PUSHop, 0, 0, Machine.integerSize);
+    ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
+    ObjectAddress address = ((KnownAddress) ast.entity).address;
+
     ast.IdenExpression.visit(this, frame);//Evaluation of the Identifier Expression
-    emit(Machine.STOREop, 1, Machine.SBr, 0);//Bind between the identifier and the expression
+    emit(Machine.STOREop, Machine.integerSize, displayRegister(frame.level, address.level), address.displacement);//Bind between the identifier and the expression
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.SBr, 0);
     loopAddr = nextInstrAddr;
-    emit(Machine.LOADop, 1, Machine.SBr, 0);
-    emit(Machine.LOADLop, 1, Machine.SBr, 1);
+    emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
+    emit(Machine.LOADLop, 1, displayRegister(frame.level, address.level), 1);
     emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);//Increase value of identifier by 1
-    emit(Machine.STOREop, 1, Machine.SBr, 0);//Update value on the identifier
-    emit(Machine.LOADop, 1, Machine.SBr, 0);
+    emit(Machine.STOREop, 1, displayRegister(frame.level, address.level), address.displacement);//Update value on the identifier
+    emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
     ast.C.visit(this, frame);//Command
     patch(jumpAddr, nextInstrAddr);//Incomplete jump patch
-    emit(Machine.LOADop, 1, Machine.SBr, 0);
+    emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
     ast.E.visit(this, frame);//LOAD integer expression value
     emit(Machine.CALLop, 0, Machine.PBr, Machine.leDisplacement);//call "lower or equal than" operation
     emit(Machine.JUMPIFop, 1, Machine.SBr, loopAddr);//Conditional jump
