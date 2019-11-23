@@ -207,7 +207,7 @@ public class Interpreter {
         System.out.println("Program has failed due to an IO error.");
         break;
       case failedArrayIndexOutOfBounds:
-        System.out.println("Program has failed due to an Index Out of Bounnds");
+        System.out.println("Program has failed due to an Index Out of Bounds");
       break;
     }
     if (status != halted)
@@ -430,6 +430,13 @@ public class Interpreter {
         break;
       case Machine.disposeDisplacement:
         ST = ST - 1; // no action taken at present
+        break;
+      case Machine.indexCheckDisplacement:
+        // Upper bound, then lower bound, then index to check
+        if (data[ST-1] <= data[ST-3] || data[ST-2] > data[ST-3]) {
+          status = failedArrayIndexOutOfBounds;// It's out of bounds
+        } else
+          ST = ST-3;
         break;
     }
   }
