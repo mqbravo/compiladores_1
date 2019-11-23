@@ -15,10 +15,9 @@
 package Triangle.ContextualAnalyzer;
 
 import Triangle.AbstractSyntaxTrees.Declaration;
-import Triangle.AbstractSyntaxTrees.FuncDeclaration;
 import Triangle.AbstractSyntaxTrees.Identifier;
-
 import java.util.ArrayList;
+import java.util.Objects;
 
 public final class IdentificationTable {
 
@@ -112,6 +111,33 @@ public final class IdentificationTable {
         searching = false;
       else if (entry.id.equals(id)) {
         present = true;
+        searching = false;
+        attr = entry.attr;
+      } else
+        entry = entry.previous;
+    }
+
+    return attr;
+  }
+  
+  // Finds an entry for the given identifier in the identification table,
+  // if any. If there are several entries for that identifier, finds the
+  // entry at the highest level, in accordance with the scope rules.
+  // Returns null iff no entry is found.
+  // otherwise returns the attribute field of the entry found. 
+  // This method is capable of filtering types of Declarations, it is used 
+  // when the same operator is defined for both Unary and Binary Expressions
+  public Declaration retrieve (String id, Class decClass) {
+
+    IdEntry entry;
+    Declaration attr = null;
+    boolean searching = true;
+
+    entry = this.latest;
+    while (searching) {
+      if (entry == null)
+        searching = false;
+      else if (entry.attr.getClass() == decClass && entry.id.equals(id)) {
         searching = false;
         attr = entry.attr;
       } else

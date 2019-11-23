@@ -44,7 +44,7 @@ public class Interpreter {
   final static int
     running = 0, halted = 1, failedDataStoreFull = 2, failedInvalidCodeAddress = 3,
     failedInvalidInstruction = 4, failedOverflow = 5, failedZeroDivide = 6,
-    failedIOError = 7;
+    failedIOError = 7, failedArrayIndexOutOfBounds = 8;
 
   static long
     accumulator;
@@ -206,6 +206,9 @@ public class Interpreter {
       case failedIOError:
         System.out.println("Program has failed due to an IO error.");
         break;
+      case failedArrayIndexOutOfBounds:
+        System.out.println("Program has failed due to an Index Out of Bounnds");
+      break;
     }
     if (status != halted)
       dump();

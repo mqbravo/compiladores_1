@@ -1,0 +1,5 @@
+let
+	const y ~ [0,2]
+in
+	putint(y[-1])
+end

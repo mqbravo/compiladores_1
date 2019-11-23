@@ -877,6 +877,7 @@ public final class Encoder implements Visitor {
     elaborateStdConst(StdEnvironment.falseDecl, Machine.falseRep);
     elaborateStdConst(StdEnvironment.trueDecl, Machine.trueRep);
     elaborateStdPrimRoutine(StdEnvironment.notDecl, Machine.notDisplacement);
+    elaborateStdPrimRoutine(StdEnvironment.negDecl, Machine.negDisplacement);
     elaborateStdPrimRoutine(StdEnvironment.andDecl, Machine.andDisplacement);
     elaborateStdPrimRoutine(StdEnvironment.orDecl, Machine.orDisplacement);
     elaborateStdConst(StdEnvironment.maxintDecl, Machine.maxintRep);
