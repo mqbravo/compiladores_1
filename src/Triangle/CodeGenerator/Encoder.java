@@ -24,6 +24,7 @@ import TAM.Machine;
 import Triangle.AbstractSyntaxTrees.*;
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
+import Triangle.SyntacticAnalyzer.SourcePosition;
 
 public final class Encoder implements Visitor {
 
@@ -345,7 +346,6 @@ public final class Encoder implements Visitor {
     return extraSize;
   }
 
-  //@TODO Implement
   @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object o) {
     Frame frame = (Frame) o;
@@ -791,7 +791,15 @@ public final class Encoder implements Visitor {
     elemSize = ((Integer) ast.type.visit(this, null));
     if (ast.E instanceof IntegerExpression) {
       IntegerLiteral IL = ((IntegerExpression) ast.E).IL;
-      ast.offset = ast.offset + Integer.parseInt(IL.spelling) * elemSize;
+      int index = Integer.parseInt(IL.spelling);
+      emit(Machine.LOADLop, 0, 0, ast.V.offset + index * elemSize); //Index
+      emit(Machine.LOADLop, 0, 0, ast.V.offset); // Lower Bound
+      emit(Machine.LOADLop, 0, 0, ast.V.type.entity.size); // Upper bound
+      
+      // Check its bounds
+      emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.indexCheckDisplacement);
+      // Keep on generating code
+      ast.offset = ast.offset + index * elemSize;
     } else {
       // v-name is indexed by a proper expression, not a literal
       if (ast.indexed)
@@ -902,6 +910,26 @@ public final class Encoder implements Visitor {
     elaborateStdPrimRoutine(StdEnvironment.puteolDecl, Machine.puteolDisplacement);
     elaborateStdEqRoutine(StdEnvironment.equalDecl, Machine.eqDisplacement);
     elaborateStdEqRoutine(StdEnvironment.unequalDecl, Machine.neDisplacement);
+    
+    // Since I didn't want the user to use the indexCheck primitive, I need
+    // To declare it and elaborate it here
+    Identifier DUMMYIDENTIFIER = new Identifier("", new SourcePosition());
+    SourcePosition DUMMYPOS = new SourcePosition();
+    
+    // Now I'll declare it, It receieves 3 Integer parameters: Index, Lower and Upper bound
+    StdEnvironment.indexCheck = new ProcDeclaration(new Identifier("indexCheck", DUMMYPOS),
+      new MultipleFormalParameterSequence(new ConstFormalParameter(DUMMYIDENTIFIER, StdEnvironment.integerType, DUMMYPOS),
+            new MultipleFormalParameterSequence(new ConstFormalParameter(DUMMYIDENTIFIER, StdEnvironment.integerType, DUMMYPOS),
+                                                new SingleFormalParameterSequence(new ConstFormalParameter(DUMMYIDENTIFIER, StdEnvironment.integerType, DUMMYPOS),
+                                                                                  DUMMYPOS),
+                                                DUMMYPOS),
+                                          DUMMYPOS),
+      new EmptyCommand(DUMMYPOS),
+      DUMMYPOS
+    );
+    
+    // Last but not least I need to elaborate it
+    elaborateStdPrimRoutine(StdEnvironment.indexCheck, Machine.indexCheckDisplacement);
   }
   
   // </editor-fold>
@@ -1009,7 +1037,7 @@ public final class Encoder implements Visitor {
       reporter.reportRestriction("can't store values larger than 255 words");
       valSize = 255; // to allow code generation to continue
     }
-    if (baseObject instanceof KnownAddress || baseObject instanceof KnownAddressWithValue) {
+    if (baseObject instanceof KnownAddress) {
       ObjectAddress address = ((KnownAddress) baseObject).address;
       if (V.indexed) {
         emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
@@ -1058,14 +1086,47 @@ public final class Encoder implements Visitor {
       ObjectAddress address = (baseObject instanceof UnknownValue) ?
                               ((UnknownValue) baseObject).address :
                               ((KnownAddress) baseObject).address;
+      // Indexed means I need to check displacements
       if (V.indexed) {
+        //<editor-fold defaultstate="collapsed" desc="Push Array Position">
+        // I know the position result is in top of the stack, I'll duplicate it
+        emit(Machine.LOADop, 1, Machine.STr, -1);
+        
+        // Push the base adress to the stack top
         emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
              address.displacement + V.offset);
+        
+        // Add leaves index at the stack top
         emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+        //</editor-fold>
+        
+        //<editor-fold defaultstate="collapsed" desc="Push Lower Bound">
+        // Pushes lower bound
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.offset);
+        //</editor-fold>
+        
+        //<editor-fold defaultstate="collapsed" desc="Push Upper Bound">
+        // Pushes upper bound
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.offset);
+        emit(Machine.LOADLop, 0, 0, ((SubscriptVname)V).V.type.entity.size); // Loads size of the expression
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+        //</editor-fold>
+        
+        // Check index
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.indexCheckDisplacement);
+        
+        // Push the base adress to the stack top
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.offset);
+        // Add the just pushed address with the displacement
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+        // Load target value
         emit(Machine.LOADIop, valSize, 0, 0);
       } else
         emit(Machine.LOADop, valSize, displayRegister(frame.level,
-	     address.level), address.displacement + V.offset);
+          address.level), address.displacement + V.offset);
     } else if (baseObject instanceof UnknownAddress) {
       ObjectAddress address = ((UnknownAddress) baseObject).address;
       emit(Machine.LOADop, Machine.addressSize, displayRegister(frame.level,

@@ -1117,7 +1117,6 @@ public final class Checker implements Visitor {
     StdEnvironment.puteolDecl = declareStdProc("puteol", new EmptyFormalParameterSequence(DUMMYPOS));
     StdEnvironment.equalDecl = declareStdBinaryOp("=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
     StdEnvironment.unequalDecl = declareStdBinaryOp("\\=", StdEnvironment.anyType, StdEnvironment.anyType, StdEnvironment.booleanType);
-
   }
 
   // </editor-fold>

@@ -1,5 +1,5 @@
 let
-	const y ~ [0,2]
+	const x ~ [0,1]
 in
-	putint(y[-1])
-end
+	putint(x[-1])
+end
