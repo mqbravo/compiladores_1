@@ -1,5 +1,5 @@
 let
-	var x: Integer
+	var y: Integer
 in
 	loop for x ~ 0 to 100 do putint(x); puteol() repeat 
 end
