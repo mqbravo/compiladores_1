@@ -181,7 +181,7 @@ public final class Checker implements Visitor {
 
     TypeDenoter e1Type = (TypeDenoter) ast.E1.visit(this, null);
     TypeDenoter e2Type = (TypeDenoter) ast.E2.visit(this, null);
-    Declaration binding = (Declaration) ast.O.visit(this, null);
+    Declaration binding = (Declaration) ast.O.visit(this, BinaryOperatorDeclaration.class);
 
     if (binding == null)
       reportUndeclared(ast.O);
@@ -297,14 +297,15 @@ public final class Checker implements Visitor {
   public Object visitUnaryExpression(UnaryExpression ast, Object o) {
 
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-    Declaration binding = (Declaration) ast.O.visit(this, null);
+    Declaration binding = (Declaration) ast.O.visit(this, UnaryOperatorDeclaration.class);
     if (binding == null) {
       reportUndeclared(ast.O);
       ast.type = StdEnvironment.errorType;
-    } else if (! (binding instanceof UnaryOperatorDeclaration))
-        reporter.reportError ("\"%\" is not a unary operator",
-                              ast.O.spelling, ast.O.position);
-    else {
+    } else if (! (binding instanceof UnaryOperatorDeclaration)){
+      ast.type = StdEnvironment.errorType;
+      reporter.reportError ("\"%\" is not a unary operator",
+                            ast.O.spelling, ast.O.position);
+    } else {
       UnaryOperatorDeclaration ubinding = (UnaryOperatorDeclaration) binding;
       if (! eType.equals(ubinding.ARG))
         reporter.reportError ("wrong argument type for \"%\"",
@@ -803,7 +804,12 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitOperator(Operator O, Object o) {
-    Declaration binding = idTable.retrieve(O.spelling);
+    Declaration binding;
+    if (o != null) {
+      binding = idTable.retrieve(O.spelling, (Class) o);
+    } else {
+      binding = idTable.retrieve(O.spelling);
+    }
     if (binding != null)
       O.decl = binding;
     return binding;
@@ -1076,6 +1082,7 @@ public final class Checker implements Visitor {
     StdEnvironment.falseDecl = declareStdConst("false", StdEnvironment.booleanType);
     StdEnvironment.trueDecl = declareStdConst("true", StdEnvironment.booleanType);
     StdEnvironment.notDecl = declareStdUnaryOp("\\", StdEnvironment.booleanType, StdEnvironment.booleanType);
+    StdEnvironment.negDecl = declareStdUnaryOp("-", StdEnvironment.integerType, StdEnvironment.integerType);
     StdEnvironment.andDecl = declareStdBinaryOp("/\\", StdEnvironment.booleanType, StdEnvironment.booleanType, StdEnvironment.booleanType);
     StdEnvironment.orDecl = declareStdBinaryOp("\\/", StdEnvironment.booleanType, StdEnvironment.booleanType, StdEnvironment.booleanType);
 
