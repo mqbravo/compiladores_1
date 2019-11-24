@@ -58,7 +58,7 @@ public class TreeVisitor implements Visitor {
 
     @Override
     public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
-        return(createQuaternary("ForLoop Command", ast.Identifier, ast.IdenExpression, ast.E, ast.C));
+        return(createTernary("ForLoop Command", ast.InitialDeclaration, ast.HaltingExpression, ast.C));
     }
 
     @Override

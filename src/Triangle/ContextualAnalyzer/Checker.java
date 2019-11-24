@@ -99,14 +99,14 @@ public final class Checker implements Visitor {
 
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-    TypeDenoter idenExpressionType = (TypeDenoter) ast.IdenExpression.visit(this, null);
-    TypeDenoter haltExpressionType = (TypeDenoter) ast.E.visit(this, null);
-    if (!idenExpressionType.equals(StdEnvironment.integerType))
-      reporter.reportError("Integer expression expected here", "", ast.IdenExpression.position);
+    TypeDenoter initialExpressionType = (TypeDenoter) ast.InitialDeclaration.E.visit(this, null);
+    TypeDenoter haltExpressionType = (TypeDenoter) ast.HaltingExpression.visit(this, null);
+    if (!initialExpressionType.equals(StdEnvironment.integerType))
+      reporter.reportError("Integer expression expected here", "", ast.InitialDeclaration.E.position);
     if (!haltExpressionType.equals(StdEnvironment.integerType))
-      reporter.reportError("Integer expression expected here", "", ast.E.position);
+      reporter.reportError("Integer expression expected here", "", ast.HaltingExpression.position);
     idTable.openScope();
-    idTable.enter(ast.Identifier.spelling, new ConstDeclaration(ast.Identifier, ast.IdenExpression, ast.position));
+    idTable.enter(ast.InitialDeclaration.I.spelling, ast.InitialDeclaration);
       ast.C.visit(this, null);
     idTable.closeScope();
     return null;

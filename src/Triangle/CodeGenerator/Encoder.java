@@ -88,18 +88,45 @@ public final class Encoder implements Visitor {
   //@TODO: Implement
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-//    Frame frame = (Frame) o;
-//    int jumpAddr, loopAddr;
-//
-//    jumpAddr = nextInstrAddr;
-//    emit(Machine.JUMPop, 0, Machine.CBr, 0);
-//    loopAddr = nextInstrAddr;
-//    ast.C.visit(this, frame);
-//    patch(jumpAddr, nextInstrAddr);
-//    ast.E.visit(this, frame);
-//    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
-//    return null;
-      return null;
+    Frame frame = (Frame) o;
+    
+    // First I need to load the halting expression
+    int haltingExpressionSize = (Integer) ast.HaltingExpression.visit(this, frame);
+    // Modify the frame
+    frame = new Frame(frame, haltingExpressionSize);
+    
+    // Now I'll load the initial expression
+    int initialExpressionSize = (Integer) ast.InitialDeclaration.E.visit(this, frame);
+    ast.InitialDeclaration.entity = new KnownAddress(initialExpressionSize, frame.level, frame.size);
+    
+    // Modify current frame:
+    frame = new Frame(frame, initialExpressionSize);
+    
+    // Now I can elaborate the code
+    int jumpAddr, loopAddr;
+    ObjectAddress address = ((KnownAddress) ast.InitialDeclaration.entity).address;
+    
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.SBr, 0);
+    loopAddr = nextInstrAddr;
+    // emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
+    ast.C.visit(this, frame);//Command
+    emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
+    emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.succDisplacement);//Increase value of identifier by 1
+    emit(Machine.STOREop, 1, displayRegister(frame.level, address.level), address.displacement);//Update value on the identifier
+    patchD(jumpAddr, nextInstrAddr);//Incomplete jump patch
+    //Load initial Expression Value
+    emit(Machine.LOADop, 1, Machine.STr, -1);
+    //Load halting Expression Value
+    emit(Machine.LOADop, 1, Machine.STr, -3);
+    //call "lower or equal than" operation, Check initial <= halting
+    emit(Machine.CALLop, 0, Machine.PBr, Machine.leDisplacement);
+    
+    emit(Machine.JUMPIFop, 1, Machine.SBr, loopAddr);//Conditional jump
+    
+    // I need to pop the space I needed for the halting and initial expressions
+    emit(Machine.POPop, 0, 0, initialExpressionSize + haltingExpressionSize);
+    return null;
   }
   
   //@TODO: Implement
@@ -125,8 +152,9 @@ public final class Encoder implements Visitor {
   public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
-
-  // Expressions
+  //</editor-fold>
+  
+  //<editor-fold defaultstate="collapsed" desc="Expressions">
   @Override
   public Object visitArrayExpression(ArrayExpression ast, Object o) {
     ast.type.visit(this, null);
@@ -262,7 +290,6 @@ public final class Encoder implements Visitor {
     return extraSize;
   }
 
-  //TODO Hacer lo mismo que los procs
   @Override
   public Object visitFuncDeclaration(FuncDeclaration ast, Object o) {
     Frame frame = (Frame) o;

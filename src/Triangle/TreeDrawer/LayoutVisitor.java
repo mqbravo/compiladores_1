@@ -29,34 +29,40 @@ public class LayoutVisitor implements Visitor {
     this.fontMetrics = fontMetrics;
   }
 
-  // Commands
+  //<editor-fold defaultstate="collapsed" desc="Commands">
+  @Override
   public Object visitAssignCommand(AssignCommand ast, Object obj) {
     return layoutBinary("AssignCom.", ast.V, ast.E);
   }
 
+  @Override
   public Object visitCallCommand(CallCommand ast, Object obj) {
     return layoutBinary("CallCom.", ast.I, ast.APS);
    }
 
+  @Override
   public Object visitEmptyCommand(EmptyCommand ast, Object obj) {
     return layoutNullary("EmptyCom.");
   }
 
+  @Override
   public Object visitIfCommand(IfCommand ast, Object obj) {
     return layoutTernary("IfCom.", ast.E, ast.C1, ast.C2);
   }
 
+  @Override
   public Object visitLetCommand(LetCommand ast, Object obj) {
     return layoutBinary("LetCom.", ast.D, ast.C);
   }
 
+  @Override
   public Object visitSequentialCommand(SequentialCommand ast, Object obj) {
     return layoutBinary("Seq.Com.", ast.C1, ast.C2);
   }
   
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object obj) {
-    return layoutTernary("ForLoopCom.", ast.IdenExpression, ast.E, ast.C);
+    return layoutTernary("ForLoopCom.", ast.InitialDeclaration, ast.HaltingExpression, ast.C);
   }
 
   @Override
@@ -78,87 +84,107 @@ public class LayoutVisitor implements Visitor {
   public Object visitDoUntilLoopCommand(LoopCommand ast, Object o) {
     return layoutBinary("DoUntilLoopCom.", ast.E, ast.C);
   }
-
-  // Expressions
+  //</editor-fold>
+  
+  //<editor-fold defaultstate="collapsed" desc="Expressions">
+  @Override
   public Object visitArrayExpression(ArrayExpression ast, Object obj) {
     return layoutUnary("ArrayExpr.", ast.AA);
   }
 
+  @Override
   public Object visitBinaryExpression(BinaryExpression ast, Object obj) {
     return layoutTernary("Bin.Expr.", ast.E1, ast.O, ast.E2);
   }
 
+  @Override
   public Object visitCallExpression(CallExpression ast, Object obj) {
     return layoutBinary("CallExpr.", ast.I, ast.APS);
   }
 
+  @Override
   public Object visitCharacterExpression(CharacterExpression ast, Object obj) {
     return layoutUnary("Char.Expr.", ast.CL);
   }
 
+  @Override
   public Object visitEmptyExpression(EmptyExpression ast, Object obj) {
     return layoutNullary("EmptyExpr.");
   }
 
+  @Override
   public Object visitIfExpression(IfExpression ast, Object obj) {
     return layoutTernary("IfExpr.", ast.E1, ast.E2, ast.E3);
   }
 
+  @Override
   public Object visitIntegerExpression(IntegerExpression ast, Object obj) {
     return layoutUnary("Int.Expr.", ast.IL);
   }
 
+  @Override
   public Object visitLetExpression(LetExpression ast, Object obj) {
     return layoutBinary("LetExpr.", ast.D, ast.E);
   }
 
+  @Override
   public Object visitRecordExpression(RecordExpression ast, Object obj) {
     return layoutUnary("Rec.Expr.", ast.RA);
   }
 
+  @Override
   public Object visitUnaryExpression(UnaryExpression ast, Object obj) {
     return layoutBinary("UnaryExpr.", ast.O, ast.E);
   }
 
+  @Override
   public Object visitVnameExpression(VnameExpression ast, Object obj) {
     return layoutUnary("VnameExpr.", ast.V);
   }
+  //</editor-fold>
 
-
-  // Declarations
+  //<editor-fold defaultstate="collapsed" desc="Declarations">
+  @Override
   public Object visitBinaryOperatorDeclaration(BinaryOperatorDeclaration ast, Object obj) {
     return layoutQuaternary("Bin.Op.Decl.", ast.O, ast.ARG1, ast.ARG2, ast.RES);
   }
 
+  @Override
   public Object visitConstDeclaration(ConstDeclaration ast, Object obj) {
     return layoutBinary("ConstDecl.", ast.I, ast.E);
   }
 
+  @Override
   public Object visitFuncDeclaration(FuncDeclaration ast, Object obj) {
     return layoutQuaternary("FuncDecl.", ast.I, ast.FPS, ast.T, ast.E);
   }
 
+  @Override
   public Object visitProcDeclaration(ProcDeclaration ast, Object obj) {
     return layoutTernary("ProcDecl.", ast.I, ast.FPS, ast.C);
   }
 
+  @Override
   public Object visitSequentialDeclaration(SequentialDeclaration ast, Object obj) {
     return layoutBinary("Seq.Decl.", ast.D1, ast.D2);
   }
 
+  @Override
   public Object visitTypeDeclaration(TypeDeclaration ast, Object obj) {
     return layoutBinary("TypeDecl.", ast.I, ast.T);
   }
 
+  @Override
   public Object visitUnaryOperatorDeclaration(UnaryOperatorDeclaration ast, Object obj) {
     return layoutTernary("UnaryOp.Decl.", ast.O, ast.ARG, ast.RES);
   }
 
+  @Override
   public Object visitVarDeclaration(VarDeclaration ast, Object obj) {
     return layoutBinary("VarDecl.", ast.I, ast.T);
   }
 
-  //Added
+  @Override
   public Object visitVarDeclarationInitialized(VarDeclarationInitialized ast, Object obj) {
     return layoutBinary("Initialized.V.Decl.", ast.I, ast.E);
   }
@@ -172,165 +198,201 @@ public class LayoutVisitor implements Visitor {
   public Object visitLocalDeclaration(LocalDeclaration ast, Object o) {
     return layoutBinary("Local.Decl", ast.dAST1, ast.dAST2);
   }
-
-  // Array Aggregates
+  //</editor-fold>
+  
+  //<editor-fold defaultstate="collapsed" desc="Aggregates">
+  //Array Aggregates
+  @Override
   public Object visitMultipleArrayAggregate(MultipleArrayAggregate ast, Object obj) {
     return layoutBinary("Mult.ArrayAgg.", ast.E, ast.AA);
   }
 
+  @Override
   public Object visitSingleArrayAggregate(SingleArrayAggregate ast, Object obj) {
     return layoutUnary("Sing.ArrayAgg.", ast.E);
   }
 
-
   // Record Aggregates
+  @Override
   public Object visitMultipleRecordAggregate(MultipleRecordAggregate ast, Object obj) {
     return layoutTernary("Mult.Rec.Agg.", ast.I, ast.E, ast.RA);
   }
 
+  @Override
   public Object visitSingleRecordAggregate(SingleRecordAggregate ast, Object obj) {
     return layoutBinary("Sing.Rec.Agg.", ast.I, ast.E);
   }
+  //</editor-fold>
 
-
+  //<editor-fold defaultstate="collapsed" desc="Parameters">
   // Formal Parameters
+  @Override
   public Object visitConstFormalParameter(ConstFormalParameter ast, Object obj) {
     return layoutBinary("ConstF.P.", ast.I, ast.T);
   }
 
+  @Override
   public Object visitFuncFormalParameter(FuncFormalParameter ast, Object obj) {
     return layoutTernary("FuncF.P.", ast.I, ast.FPS, ast.T);
   }
 
+  @Override
   public Object visitProcFormalParameter(ProcFormalParameter ast, Object obj) {
     return layoutBinary("ProcF.P.", ast.I, ast.FPS);
   }
 
+  @Override
   public Object visitVarFormalParameter(VarFormalParameter ast, Object obj) {
     return layoutBinary("VarF.P.", ast.I, ast.T);
   }
 
 
+  @Override
   public Object visitEmptyFormalParameterSequence(EmptyFormalParameterSequence ast, Object obj) {
     return layoutNullary("EmptyF.P.S.");
   }
 
+  @Override
   public Object visitMultipleFormalParameterSequence(MultipleFormalParameterSequence ast, Object obj) {
     return layoutBinary("Mult.F.P.S.", ast.FP, ast.FPS);
   }
 
+  @Override
   public Object visitSingleFormalParameterSequence(SingleFormalParameterSequence ast, Object obj) {
     return layoutUnary("Sing.F.P.S.", ast.FP);
   }
 
-
   // Actual Parameters
+  @Override
   public Object visitConstActualParameter(ConstActualParameter ast, Object obj) {
     return layoutUnary("ConstA.P.", ast.E);
   }
 
+  @Override
   public Object visitFuncActualParameter(FuncActualParameter ast, Object obj) {
     return layoutUnary("FuncA.P.", ast.I);
   }
 
+  @Override
   public Object visitProcActualParameter(ProcActualParameter ast, Object obj) {
     return layoutUnary("ProcA.P.", ast.I);
   }
 
+  @Override
   public Object visitVarActualParameter(VarActualParameter ast, Object obj) {
     return layoutUnary("VarA.P.", ast.V);
   }
 
-
+  @Override
   public Object visitEmptyActualParameterSequence(EmptyActualParameterSequence ast, Object obj) {
     return layoutNullary("EmptyA.P.S.");
   }
 
+  @Override
   public Object visitMultipleActualParameterSequence(MultipleActualParameterSequence ast, Object obj) {
     return layoutBinary("Mult.A.P.S.", ast.AP, ast.APS);
   }
 
+  @Override
   public Object visitSingleActualParameterSequence(SingleActualParameterSequence ast, Object obj) {
     return layoutUnary("Sing.A.P.S.", ast.AP);
   }
+  //</editor-fold>
 
-
+  //<editor-fold defaultstate="collapsed" desc="Types and Variables">
   // Type Denoters
+  @Override
   public Object visitAnyTypeDenoter(AnyTypeDenoter ast, Object obj) {
     return layoutNullary("any");
   }
 
+  @Override
   public Object visitArrayTypeDenoter(ArrayTypeDenoter ast, Object obj) {
     return layoutBinary("ArrayTypeD.", ast.IL, ast.T);
   }
 
+  @Override
   public Object visitBoolTypeDenoter(BoolTypeDenoter ast, Object obj) {
     return layoutNullary("bool");
   }
 
+  @Override
   public Object visitCharTypeDenoter(CharTypeDenoter ast, Object obj) {
     return layoutNullary("char");
   }
 
+  @Override
   public Object visitErrorTypeDenoter(ErrorTypeDenoter ast, Object obj) {
     return layoutNullary("error");
   }
 
+  @Override
   public Object visitSimpleTypeDenoter(SimpleTypeDenoter ast, Object obj) {
     return layoutUnary("Sim.TypeD.", ast.I);
   }
 
+  @Override
   public Object visitIntTypeDenoter(IntTypeDenoter ast, Object obj) {
     return layoutNullary("int");
   }
 
+  @Override
   public Object visitRecordTypeDenoter(RecordTypeDenoter ast, Object obj) {
     return layoutUnary("Rec.TypeD.", ast.FT);
   }
 
-
+  @Override
   public Object visitMultipleFieldTypeDenoter(MultipleFieldTypeDenoter ast, Object obj) {
     return layoutTernary("Mult.F.TypeD.", ast.I, ast.T, ast.FT);
   }
 
+  @Override
   public Object visitSingleFieldTypeDenoter(SingleFieldTypeDenoter ast, Object obj) {
     return layoutBinary("Sing.F.TypeD.", ast.I, ast.T);
   }
 
 
   // Literals, Identifiers and Operators
+  @Override
   public Object visitCharacterLiteral(CharacterLiteral ast, Object obj) {
     return layoutNullary(ast.spelling);
   }
 
+  @Override
   public Object visitIdentifier(Identifier ast, Object obj) {
     return layoutNullary(ast.spelling);
  }
 
+  @Override
   public Object visitIntegerLiteral(IntegerLiteral ast, Object obj) {
     return layoutNullary(ast.spelling);
   }
 
+  @Override
   public Object visitOperator(Operator ast, Object obj) {
     return layoutNullary(ast.spelling);
   }
 
 
   // Value-or-variable names
+  @Override
   public Object visitDotVname(DotVname ast, Object obj) {
     return layoutBinary("DotVname", ast.I, ast.V);
   }
 
+  @Override
   public Object visitSimpleVname(SimpleVname ast, Object obj) {
     return layoutUnary("Sim.Vname", ast.I);
   }
 
+  @Override
   public Object visitSubscriptVname(SubscriptVname ast, Object obj) {
     return layoutBinary("Sub.Vname",
         ast.V, ast.E);
   }
+  //</editor-fold>
 
-
+  //<editor-fold defaultstate="collapsed" desc="Auxiliar Methods">
   // Programs
   public Object visitProgram(Program ast, Object obj) {
     return layoutUnary("Program", ast.C);
@@ -513,5 +575,5 @@ public class LayoutVisitor implements Visitor {
 
     return r;
   }
-
+  //</editor-fold>
 }

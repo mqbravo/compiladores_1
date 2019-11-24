@@ -462,6 +462,7 @@ public class Interpreter {
       n = currentInstr.n;
       d = currentInstr.d;
       // Execute instruction ...
+      //dump();//Debugging
       switch (op) {
         case Machine.LOADop:
           addr = d + content(r);

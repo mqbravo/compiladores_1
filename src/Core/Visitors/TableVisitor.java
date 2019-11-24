@@ -81,11 +81,11 @@ public class TableVisitor implements Visitor {
   
     @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-      ast.IdenExpression.visit(this, null);
-      ast.E.visit(this, null);
-      ast.C.visit(this, null);
-      
-      return(null);
+    ast.InitialDeclaration.visit(this, null);
+    ast.HaltingExpression.visit(this, null);
+    ast.C.visit(this, null);
+    
+    return(null);
   }
   
   //@TODO: Implement
