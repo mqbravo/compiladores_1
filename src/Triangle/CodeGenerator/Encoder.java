@@ -87,39 +87,36 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
-    Frame frame = (Frame) o;
+    Frame frame = (Frame) o; // Load the frame
     
     // Load the halting expression
     int haltingExpressionSize = (Integer) ast.HaltingExpression.visit(this, frame);
-    // Modify the frame
-    frame = new Frame(frame, haltingExpressionSize);
+    frame = new Frame(frame, haltingExpressionSize);// Modify the frame
     
     // Load the initial expression
     int initialExpressionSize = (Integer) ast.InitialDeclaration.E.visit(this, frame);
     ast.InitialDeclaration.entity = new KnownAddress(initialExpressionSize, frame.level, frame.size);
+    frame = new Frame(frame, initialExpressionSize);// Modify the frame
     
-    // Modify current frame:
-    frame = new Frame(frame, initialExpressionSize);
-    
-
+    // I need to keep on these addreses
     int jumpAddr, loopAddr;
-    ObjectAddress address = ((KnownAddress) ast.InitialDeclaration.entity).address;
-    
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.SBr, 0);
     loopAddr = nextInstrAddr;
     ast.C.visit(this, frame);//Command
-    emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
-    emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.succDisplacement);//Increase value of identifier by 1
-    emit(Machine.STOREop, 1, displayRegister(frame.level, address.level), address.displacement);//Update value on the identifier
-    patchD(jumpAddr, nextInstrAddr);//Incomplete jump patch
+    
+    // Now, update control variable value, it's on top of the Stack
+    emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.succDisplacement);//Increase value of control
+    
+    patchD(jumpAddr, nextInstrAddr);//patch incomplete jump
+    
+    // Finally check if I need to keep going
     //Load initial Expression Value
     emit(Machine.LOADop, 1, Machine.STr, -1);
     //Load halting Expression Value
     emit(Machine.LOADop, 1, Machine.STr, -3);
     //call "lower or equal than" operation, Check initial <= halting
     emit(Machine.CALLop, 0, Machine.PBr, Machine.leDisplacement);
-    
     emit(Machine.JUMPIFop, 1, Machine.SBr, loopAddr);//Conditional jump
     
     // Pop the space for the halting and initial expressions
@@ -1084,7 +1081,38 @@ public final class Encoder implements Visitor {
     }
     if (baseObject instanceof KnownAddress) {
       ObjectAddress address = ((KnownAddress) baseObject).address;
+      
+      // Indexed means I need to check displacements
       if (V.indexed) {
+        //<editor-fold defaultstate="collapsed" desc="Push Array Position">
+        // I know the position result is in top of the stack, I'll duplicate it
+        emit(Machine.LOADop, 1, Machine.STr, -1);
+        
+        // Push the base adress to the stack top
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.offset);
+        
+        // Add leaves index at the stack top
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+        //</editor-fold>
+        
+        //<editor-fold defaultstate="collapsed" desc="Push Lower Bound">
+        // Pushes lower bound
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.offset);
+        //</editor-fold>
+        
+        //<editor-fold defaultstate="collapsed" desc="Push Upper Bound">
+        // Pushes upper bound
+        emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
+             address.displacement + V.offset);
+        emit(Machine.LOADLop, 0, 0, ((SubscriptVname)V).V.type.entity.size); // Loads size of the expression
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
+        //</editor-fold>
+        
+        // Check index
+        emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.indexCheckDisplacement);
+        
         emit(Machine.LOADAop, 0, displayRegister(frame.level, address.level),
                 address.displacement + V.offset);
         emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.addDisplacement);
