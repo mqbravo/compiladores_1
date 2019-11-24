@@ -11,21 +11,21 @@ import Triangle.SyntacticAnalyzer.SourcePosition;
  *
  * @author Esteban
  */
-public class ForLoopCommand extends LoopCommand{
+public class ForLoopCommand extends Command{
     
     
     /**
    * This creates a new LoopCommand AST
-   * @param identifier The identifier for this loop's immutable identifier
-   * @param idenExpression The expression from which the identifier will be made of
-   * @param eAST It's control expression
+   * @param initialDeclaration A ConstantDeclaration representing initial value
+   * @param haltingExpression An expression containing the halting value
    * @param cAST It's command
    * @param thePosition Where it can be found in the source
    */
-  public ForLoopCommand (Identifier identifier, Expression idenExpression, Expression eAST, Command cAST, SourcePosition thePosition) {
-    super (eAST, cAST, thePosition);
-    Identifier = identifier;
-    IdenExpression = idenExpression;
+  public ForLoopCommand (ConstDeclaration initialDeclaration, Expression haltingExpression, Command cAST, SourcePosition thePosition) {
+    super (thePosition);
+    InitialDeclaration = initialDeclaration;
+    HaltingExpression = haltingExpression;
+    C = cAST;
   }
 
   @Override
@@ -33,6 +33,7 @@ public class ForLoopCommand extends LoopCommand{
     return v.visitForLoopCommand(this, o);
   }
 
-  public Identifier Identifier;
-  public Expression IdenExpression;
+  public ConstDeclaration InitialDeclaration;
+  public Expression HaltingExpression;
+  public Command C;
 }

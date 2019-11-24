@@ -361,8 +361,8 @@ public class Parser {
     return commandAST;
   }
 
-  LoopCommand parseLoopCommand() throws SyntaxError{
-    LoopCommand commandAST = null;
+  Command parseLoopCommand() throws SyntaxError{
+    Command commandAST = null;
     
     SourcePosition commandPos = new SourcePosition();
     start(commandPos);
@@ -403,14 +403,15 @@ public class Parser {
               case Token.FOR:
               {
                 acceptIt();
-                Identifier identificador = parseIdentifier();
+                Identifier identifier = parseIdentifier();
                 accept(Token.IS);
                 Expression idenAST = parseExpression();
+                ConstDeclaration initialDeclaration = new ConstDeclaration(identifier, idenAST, commandPos);
                 accept(Token.TO);
                 Expression eAST = parseExpression();
                 accept(Token.DO);
                 Command cAST = parseCommand();
-                commandAST = new ForLoopCommand(identificador, idenAST, eAST, cAST, commandPos);
+                commandAST = new ForLoopCommand(initialDeclaration, eAST, cAST, commandPos);
                 break;
               }
               default:

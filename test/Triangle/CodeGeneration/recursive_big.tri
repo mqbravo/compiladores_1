@@ -1,11 +1,14 @@
-!Este programa llama a foo(), el cual hace una llamada a dummy() la cual esta declarada en el futuro. dummy() llama a fun() con un 3, fun tiene a su vez tres funciones recursivas internas:
-!plusOne(), minusOne() y multTwo(). Estas hacen una llamada del procedimiento writeNumber(), el cual es futuro para todos ellos. Ademas, cada uno de estos procs utiliza llamadas encadenadas
-!que son futuras para ellos. Por ultimo, fun() llama a plusOne() para iniciar la cadena de llamadas.
+!Este programa llama a foo(), el cual hace una llamada a dummy() la cual esta declarada en el futuro. dummy() llama a fun() 10 veces (parametro que viene desde la llamada de foo), 
+!fun tiene a su vez tres funciones recursivas internas: plusOne(), minusOne() y multTwo(). Estas hacen una llamada del procedimiento writeNumber(), el cual es futuro para todos ellos.
+!Ademas, cada uno de estos procs utiliza llamadas encadenadas que son futuras para ellos. Por ultimo, fun() llama a plusOne() para iniciar la cadena de llamadas.
 
 let
   recursive
-    proc foo() ~
-      dummy()
+    proc foo(finish : Integer) ~
+		loop for i~0 to finish do
+			dummy(i);
+			puteol()
+		repeat
     end
 
   and
@@ -27,11 +30,11 @@ let
         and
           proc minusOne(x : Integer)~
             let
-	var a : Integer
+	            var a : Integer
             in
-	a := x - 1;
-	writeNumber(a);
-	multTwo(x)
+              a := x - 1;
+              writeNumber(a);
+              multTwo(x)
             end
 
           end
@@ -61,13 +64,15 @@ let
     end
 
   and
-    proc dummy() ~
-    fun(3)
+    proc dummy(i: Integer) ~
+    fun(i)
     end
 
-end
+  end;
+
+  var control init 0
 
 in
-foo()
+  foo(10)
 end
 

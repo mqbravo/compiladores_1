@@ -111,9 +111,8 @@ public class XMLWriterVisitor implements Visitor {
     @Override
     public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
       writeToXMLFile("<ForLoopCommand>\n");
-        ast.Identifier.visit(this, null);
-        ast.IdenExpression.visit(this, null);
-        ast.E.visit(this, null);
+        ast.InitialDeclaration.visit(this, null);
+        ast.HaltingExpression.visit(this, null);
         ast.C.visit(this, null);
       writeToXMLFile("</ForLoopCommand>\n");
       return null;
