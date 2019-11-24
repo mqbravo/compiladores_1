@@ -62,9 +62,9 @@ public final class Encoder implements Visitor {
     ast.C1.visit(this, frame);
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patch(jumpifAddr, nextInstrAddr);
+    patchD(jumpifAddr, nextInstrAddr);
     ast.C2.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return null;
   }
 
@@ -136,7 +136,7 @@ public final class Encoder implements Visitor {
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
     loopAddr = nextInstrAddr;
     ast.C.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     ast.E.visit(this, frame);
     emit(Machine.JUMPIFop, 1, Machine.CBr, loopAddr);
     return null;
@@ -162,7 +162,7 @@ public final class Encoder implements Visitor {
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
     loopAddr = nextInstrAddr;
     ast.C.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     ast.E.visit(this, frame);
     emit(Machine.JUMPIFop, 0, Machine.CBr, loopAddr);
     return null;
@@ -234,9 +234,9 @@ public final class Encoder implements Visitor {
     //valSize = (Integer) ast.E2.visit(this, frame);
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.CBr, 0);
-    patch(jumpifAddr, nextInstrAddr);
+    patchD(jumpifAddr, nextInstrAddr);
     valSize = (Integer) ast.E3.visit(this, frame);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return valSize;
   }
 
@@ -332,7 +332,7 @@ public final class Encoder implements Visitor {
       valSize = ((Integer) ast.E.visit(this, frame2));
     }
     emit(Machine.RETURNop, valSize, 0, argsSize);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return 0;
   }
 
@@ -357,7 +357,7 @@ public final class Encoder implements Visitor {
 
 
     emit(Machine.RETURNop, 0, 0, argsSize);
-    patch(jumpAddr, nextInstrAddr);
+    patchD(jumpAddr, nextInstrAddr);
     return 0;
   }
 
@@ -1042,7 +1042,7 @@ public final class Encoder implements Visitor {
   }
 
   // Patches the d-field of the instruction at address addr.
-  private void patch (int addr, int d) {
+  private void patchD (int addr, int d) {
     Machine.code[addr].d = d;
   }
 
