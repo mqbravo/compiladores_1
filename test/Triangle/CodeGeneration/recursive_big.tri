@@ -4,8 +4,8 @@
 
 let
   recursive
-    proc foo() ~
-      dummy()
+    proc foo(i : Integer) ~
+      dummy(i)
     end
 
   and
@@ -27,11 +27,11 @@ let
         and
           proc minusOne(x : Integer)~
             let
-	var a : Integer
+	            var a : Integer
             in
-	a := x - 1;
-	writeNumber(a);
-	multTwo(x)
+              a := x - 1;
+              writeNumber(a);
+              multTwo(x)
             end
 
           end
@@ -61,13 +61,19 @@ let
     end
 
   and
-    proc dummy() ~
-    fun(3)
+    proc dummy(i: Integer) ~
+    fun(i)
     end
 
-end
+  end;
+
+  var control init 0
 
 in
-foo()
+  loop for i ~ control to 10 do
+    foo(i);
+    puteol()
+  repeat
+
 end
 
