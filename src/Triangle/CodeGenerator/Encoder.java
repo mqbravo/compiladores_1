@@ -89,26 +89,25 @@ public final class Encoder implements Visitor {
   public Object visitForLoopCommand(ForLoopCommand ast, Object o) {
     Frame frame = (Frame) o;
     
-    // First I need to load the halting expression
+    // Load the halting expression
     int haltingExpressionSize = (Integer) ast.HaltingExpression.visit(this, frame);
     // Modify the frame
     frame = new Frame(frame, haltingExpressionSize);
     
-    // Now I'll load the initial expression
+    // Load the initial expression
     int initialExpressionSize = (Integer) ast.InitialDeclaration.E.visit(this, frame);
     ast.InitialDeclaration.entity = new KnownAddress(initialExpressionSize, frame.level, frame.size);
     
     // Modify current frame:
     frame = new Frame(frame, initialExpressionSize);
     
-    // Now I can elaborate the code
+
     int jumpAddr, loopAddr;
     ObjectAddress address = ((KnownAddress) ast.InitialDeclaration.entity).address;
     
     jumpAddr = nextInstrAddr;
     emit(Machine.JUMPop, 0, Machine.SBr, 0);
     loopAddr = nextInstrAddr;
-    // emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
     ast.C.visit(this, frame);//Command
     emit(Machine.LOADop, 1, displayRegister(frame.level, address.level), address.displacement);
     emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.succDisplacement);//Increase value of identifier by 1
@@ -123,7 +122,7 @@ public final class Encoder implements Visitor {
     
     emit(Machine.JUMPIFop, 1, Machine.SBr, loopAddr);//Conditional jump
     
-    // I need to pop the space I needed for the halting and initial expressions
+    // Pop the space for the halting and initial expressions
     emit(Machine.POPop, 0, 0, initialExpressionSize + haltingExpressionSize);
     return null;
   }
@@ -215,7 +214,6 @@ public final class Encoder implements Visitor {
     emit(Machine.LOADLop, 0, 0, ast.CL.spelling.charAt(1));
     return valSize;
   }
-  //@TODO: Here's the visitEmptyExpression Method
   @Override
   public Object visitEmptyExpression(EmptyExpression ast, Object o) {
     return 0;
