@@ -95,7 +95,7 @@ public final class Encoder implements Visitor {
     
     // Load the initial expression
     int initialExpressionSize = (Integer) ast.InitialDeclaration.E.visit(this, frame);
-    ast.InitialDeclaration.entity = new KnownAddress(initialExpressionSize, frame.level, frame.size);
+    ast.InitialDeclaration.entity = new UnknownValue(initialExpressionSize, frame.level, frame.size);
     frame = new Frame(frame, initialExpressionSize);// Modify the frame
     
     // I need to keep on these addreses
